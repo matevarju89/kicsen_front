@@ -1,0 +1,25 @@
+{
+  "hu": {
+    "translation": {
+      "Appetizer": "Előétel",
+      "Soup": "Leves",
+      "Main": "Főétel",
+      "Dessert": "Desszert",
+      "Recipes": "Receptek",
+      "Categories": "Kategóriák",
+      "New Recipe": "Új recept",
+      "Logout": "Kijelentkezés",
+      "Sign in to see recipes": "Jelentkezz be a receptekhez!",
+      "Username": "Felhasználónév",
+      "Password": "Jelszó",
+      "Log In": "Bejelentkezés",
+      "Username is required": "A felhasználónév kötelező",
+      "Password should be of minimum 8 characters length": "A jelszónak legalább 8 karakterből kell állnia",
+      "Password is required": "A jelszó kötelező",
+      "About": "Rólunk",
+      "Anonymous": "Ismeretlen",
+      "Welcome": "Üdvözlet",
+      "The passed credentials are incorrect": "Nem jó a felhasználónév vagy a jelszó"
+    }
+  }
+}
