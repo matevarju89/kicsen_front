@@ -5,6 +5,8 @@ import App from './App';
 import './i18n';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
 import { Client as Styletron } from 'styletron-engine-atomic';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { LightTheme, BaseProvider } from 'baseui';
@@ -12,16 +14,19 @@ import * as serviceWorker from './serviceWorker';
 import { Toaster } from 'react-hot-toast';
 
 const engine = new Styletron();
+let persistor = persistStore(store);
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <StyletronProvider value={engine}>
-        <BaseProvider theme={LightTheme}>
-          <App />
-          <Toaster />
-        </BaseProvider>
-      </StyletronProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <StyletronProvider value={engine}>
+          <BaseProvider theme={LightTheme}>
+            <App />
+            <Toaster />
+          </BaseProvider>
+        </StyletronProvider>
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
