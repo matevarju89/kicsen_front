@@ -16,7 +16,6 @@ const NavBar = () => {
     setMainItems((prev) => setItemActive(prev, item));
   };
   const currentMenuItems: NavItemT[] = useMemo(() => {
-    console.log('recalculating', isAuthenticated);
     if (isAuthenticated) {
       return [
         {
@@ -66,6 +65,11 @@ const NavBar = () => {
   const currentUserItems: NavItemT[] = useMemo(() => {
     if (isAuthenticated) {
       return [
+        {
+          icon: Overflow,
+          label: t('Profile'),
+          info: { linkTo: '/user' },
+        },
         { icon: Overflow, label: t('Logout'), info: { clickAction: 'logout' } },
       ];
     } else {

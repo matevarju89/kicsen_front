@@ -1,5 +1,5 @@
 import React from 'react';
-import { Block } from 'baseui/block';
+import { Grid, Cell } from 'baseui/layout-grid';
 
 export interface LayoutProps {
   children: React.ReactNode;
@@ -7,15 +7,9 @@ export interface LayoutProps {
 
 const Layout = (props: LayoutProps) => {
   return (
-    <>
-      <Block
-        width={['280px', '310px', '580px', '1134px']}
-        margin='auto'
-        padding={'20px 10px'}
-      >
-        {props.children}
-      </Block>
-    </>
+    <Grid>
+      <Cell span={12}>{props.children}</Cell>
+    </Grid>
   );
 };
 

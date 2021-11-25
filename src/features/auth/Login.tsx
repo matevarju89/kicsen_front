@@ -1,10 +1,9 @@
 import React, { Fragment, useEffect } from 'react';
 import * as yup from 'yup';
 import { useHistory } from 'react-router-dom';
-import { useField, Formik, FormikProps, Form } from 'formik';
+import { Formik, FormikProps, Form } from 'formik';
 import { useStyletron } from 'baseui';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { Button } from 'baseui/button';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -12,37 +11,11 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { loginUser, authSelector, clearState } from './authSlice';
 import { AuthPayloadData } from './types';
 import { Redirect } from 'react-router';
+import FormInput from '../common/FormInput';
 
 const initialValues: AuthPayloadData = {
   username: '',
   password: '',
-};
-
-interface IFormFieldProps {
-  id: string;
-  name: string;
-  type: string;
-  placeholder: string;
-  clearOnEscape: boolean;
-}
-
-const FormInput = (props: IFormFieldProps) => {
-  const [css] = useStyletron();
-  const [field, meta] = useField(props);
-  return (
-    <>
-      <Input {...field} {...props} />
-      {meta.touched && meta.error ? (
-        <div
-          className={css({
-            color: 'red',
-          })}
-        >
-          {meta.error}
-        </div>
-      ) : null}
-    </>
-  );
 };
 
 const Login = () => {
