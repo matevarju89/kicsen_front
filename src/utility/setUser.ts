@@ -4,10 +4,10 @@ import api from './http-common';
 
 const setUser = (user: { token: string; username: string } | null) => {
   if (user) {
-    api.defaults.headers.common['x-auth-token'] = user.token;
+    api.defaults.headers.common['Authorization'] = 'Bearer ' + user.token;
     localStorage.setItem('user', JSON.stringify(user));
   } else {
-    delete api.defaults.headers.common['x-auth-token'];
+    delete api.defaults.headers.common['Authorization'];
     localStorage.removeItem('user');
   }
 };

@@ -12,10 +12,12 @@ import {
 } from 'redux-persist';
 import counterReducer from '../features/counter/counterSlice';
 import authReducer from '../features/auth/authSlice';
+import userReducer from '../features/user/userSlice';
 
 const reducers = combineReducers({
   counter: counterReducer,
   auth: authReducer,
+  user: userReducer,
 });
 const persistConfig = {
   key: 'root',

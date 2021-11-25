@@ -6,7 +6,13 @@ class UserDataService {
   getAll() {
     return api.get<Array<UserData>>('/users');
   }
-
+  getBySinglePropertyValue(
+    property: string,
+    value: string,
+    operator = 'equals'
+  ) {
+    return api.get<UserData>(`/users?where[${property}][${operator}]=${value}`);
+  }
   get(id: string) {
     return api.get<UserData>(`/users/${id}`);
   }
