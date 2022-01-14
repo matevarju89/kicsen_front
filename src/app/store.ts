@@ -13,11 +13,13 @@ import {
 import counterReducer from '../features/counter/counterSlice';
 import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/user/userSlice';
+import recipesReducer from '../features/recipes/recipeSlice';
 
 const reducers = combineReducers({
   counter: counterReducer,
   auth: authReducer,
   user: userReducer,
+  recipes: recipesReducer,
 });
 const persistConfig = {
   key: 'root',

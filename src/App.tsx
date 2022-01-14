@@ -36,6 +36,27 @@ function App() {
           ></Route>
         </Switch>
       </Layout>
+      <footer
+        style={{
+          background: '#000',
+          padding: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <ul style={{ paddingLeft: '0' }}>
+          <li className='list-inline-item'>
+            <a href='/' style={{ color: '#fff', textDecoration: 'none' }}>
+              Kicsen App
+            </a>
+          </li>
+        </ul>
+        <p
+          className='copyright'
+          style={{ color: '#fff' }}
+        >{`Made By Mate © ${new Date().getFullYear()}`}</p>
+      </footer>
     </Router>
   );
 }
