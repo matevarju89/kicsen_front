@@ -20,7 +20,15 @@
       "Anonymous": "Ismeretlen",
       "Welcome": "Üdvözlet",
       "Profile": "Profil",
-      "The passed credentials are incorrect": "Nem jó a felhasználónév vagy a jelszó"
+      "The passed credentials are incorrect": "Nem jó a felhasználónév vagy a jelszó",
+      "You are not part of a family": "Nincs beállítva családod",
+      "Your Family": "A családod",
+      "Read more": "Olvasás",
+      "Difficulty": "Nehézség",
+      "medium": "Közepes",
+      "easy": "Könnyű",
+      "hard": "Nehéz",
+      "Show All": "Mutasd az összeset"
     }
   }
 }

@@ -2,6 +2,7 @@
 import http from '../../utility/http-common';
 import { RecipeData } from './types';
 
+export const recipeCategories = ['appetizer', 'soup', 'main', 'dessert'];
 class RecipeDataService {
   getAll() {
     return http.get<Array<RecipeData>>('/recipes');
