@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { RecipeData } from './types';
-import recipeAPI from './recipeApi';
+import recipeAPI, { recipeCategories } from './recipeApi';
 
 interface IRecipeListState {
   count: number;
@@ -30,6 +30,39 @@ export const loadAllRecipes = createAsyncThunk('recipes/getall', async () => {
   }
 });
 
+export const loadFirstRecipesOfCategories = createAsyncThunk(
+  'recipes/getfirstrecipesofcategories',
+  async () => {
+    let results: any = [];
+    const promises = recipeCategories.map(async (category) => {
+      const response = (await recipeAPI.getfirstRecipesOfCategory(
+        6,
+        category
+      )) as any;
+      if (response.status === 200) {
+        results = [...results, ...response.data];
+      }
+    });
+    await Promise.all(promises);
+    return results;
+  }
+);
+
+export const loadCategoryPaginated = createAsyncThunk(
+  'recipes/getcategory',
+  async (category: any, fromIndex: any) => {
+    const response = (await recipeAPI.getBySinglePropertyValuePaginated(
+      'category1',
+      category,
+      12,
+      fromIndex
+    )) as any;
+    if (response.status === 200) {
+      return response.data as RecipeData[];
+    }
+  }
+);
+
 export const recipeSlice = createSlice({
   name: 'recipes',
   initialState,
@@ -47,6 +80,32 @@ export const recipeSlice = createSlice({
         state.recipesLoading = false;
       })
       .addCase(loadAllRecipes.pending, (state, action) => {
+        state.recipesLoading = true;
+      })
+      .addCase(loadFirstRecipesOfCategories.fulfilled, (state, { payload }) => {
+        state.recipeList = payload as RecipeData[];
+        state.recipesLoading = false;
+        state.count = payload ? payload.length : 0;
+        state.recipesError = '';
+      })
+      .addCase(loadFirstRecipesOfCategories.rejected, (state, action) => {
+        state.recipesError = 'Failed loading the recipes';
+        state.recipesLoading = false;
+      })
+      .addCase(loadFirstRecipesOfCategories.pending, (state, action) => {
+        state.recipesLoading = true;
+      })
+      .addCase(loadCategoryPaginated.fulfilled, (state, { payload }) => {
+        state.recipeList = [...state.recipeList, ...(payload as RecipeData[])];
+        state.recipesLoading = false;
+        state.count = payload ? payload.length : 0;
+        state.recipesError = '';
+      })
+      .addCase(loadCategoryPaginated.rejected, (state, action) => {
+        state.recipesError = 'Failed loading the recipes';
+        state.recipesLoading = false;
+      })
+      .addCase(loadCategoryPaginated.pending, (state, action) => {
         state.recipesLoading = true;
       });
   },
