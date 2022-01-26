@@ -4,6 +4,7 @@ import { useStyletron } from 'baseui';
 import { useTranslation } from 'react-i18next';
 import { RecipesMain } from './recipesMain';
 import { RecipeCategory } from './recipeCategory';
+import { RecipeDetail } from './recipeDetail';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { loadUserBase, userSelector } from '../user/userSlice';
 import { authSelector } from '../auth/authSlice';
@@ -63,7 +64,8 @@ export const RecipesDist = () => {
         <Route exact path={path}>
           <RecipesMain />
         </Route>
-        <Route path={`${path}/:category`} children={<RecipeCategory />} />
+        <Route exact path={`${path}/:category`} children={<RecipeCategory />} />
+        <Route path={`${path}/detail/:id`} children={<RecipeDetail />} />
       </Switch>
     </>
   );

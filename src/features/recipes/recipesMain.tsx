@@ -2,7 +2,7 @@ import react, { useEffect, useRef } from 'react';
 import { useStyletron, withStyle, styled } from 'baseui';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Navigation, A11y } from 'swiper';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   loadAllRecipes,
@@ -34,6 +34,8 @@ export const RecipesMain = () => {
   const dispatch = useAppDispatch();
   const [css, theme] = useStyletron();
   const { t } = useTranslation();
+  const history = useHistory();
+  const { path } = useRouteMatch();
   const { recipeList } = useAppSelector(recipeSelector);
   const prevRef = Array(recipeCategories.length).fill(useRef(null));
   const nextRef = Array(recipeCategories.length).fill(useRef(null));
@@ -147,6 +149,9 @@ export const RecipesMain = () => {
                             overrides={{
                               BaseButton: { style: { width: '100%' } },
                             }}
+                            onClick={() =>
+                              history.push(`${path}/detail/${recipe.id}`)
+                            }
                           >
                             {t('Read more')}
                           </Button>

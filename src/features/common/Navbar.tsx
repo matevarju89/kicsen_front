@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
+import { useStyletron } from 'baseui';
 import { useAppDispatch } from '../../app/hooks';
 import { logoutUser } from '../auth/authSlice';
 import { AppNavBar, setItemActive, NavItemT } from 'baseui/app-nav-bar';
@@ -8,10 +9,29 @@ import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { authSelector } from '../auth/authSlice';
 
+type Ref = HTMLAnchorElement;
+
+/*const LinkComponent = React.forwardRef<Ref, any>(({ ...props }, ref) => {
+  const [css] = useStyletron();
+  return (
+    <a
+      ref={ref}
+      className={css({
+        display: 'block',
+        textDecoration: 'none',
+      })}
+      {...props}
+    >
+      {props.children}
+    </a>
+  );
+});*/
+
 const NavBar = () => {
   const { username, isAuthenticated } = useAppSelector(authSelector);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const [css] = useStyletron();
   const handleMainItemSelect = (item: NavItemT) => {
     setMainItems((prev) => setItemActive(prev, item));
   };
@@ -93,9 +113,25 @@ const NavBar = () => {
         username={isAuthenticated ? username : t('Anonymous')}
         usernameSubtitle={t('Welcome')}
         userImgUrl=''
+        overrides={{
+          MainMenuItem: {
+            style: {
+              padding: 0,
+            },
+          },
+        }}
         mapItemToNode={(item) => {
           if (item?.info?.linkTo) {
-            return <Link to={item.info.linkTo}>{item.label}</Link>;
+            return (
+              <Link
+                to={item.info.linkTo}
+                className={css({
+                  textDecoration: 'none',
+                })}
+              >
+                {item.label}
+              </Link>
+            );
           } else if (item?.info?.clickAction) {
             return (
               <span onClick={() => dispatch(logoutUser())}>{item.label}</span>
