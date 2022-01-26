@@ -1,6 +1,6 @@
 import react, { useEffect, useRef } from 'react';
 import { useStyletron, styled } from 'baseui';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { loadUserBase, userSelector } from '../user/userSlice';
 import { recipeSelector, loadCategoryPaginated } from './recipeSlice';
@@ -31,6 +31,7 @@ export const RecipeCategory = () => {
   const { username } = useAppSelector(authSelector);
   const { families } = useAppSelector(userSelector);
   const { recipeList } = useAppSelector(recipeSelector);
+  const history = useHistory();
   useEffect(() => {
     dispatch(loadUserBase(username));
     dispatch(loadCategoryPaginated({ category: 'appetizers', fromIndex: 0 }));
@@ -78,6 +79,9 @@ export const RecipeCategory = () => {
                         overrides={{
                           BaseButton: { style: { width: '100%' } },
                         }}
+                        onClick={() =>
+                          history.push(`/recipes/detail/${recipe.id}`)
+                        }
                       >
                         {t('Read more')}
                       </Button>
