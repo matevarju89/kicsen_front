@@ -13,9 +13,11 @@ import { Provider as StyletronProvider } from 'styletron-react';
 import { LightTheme, BaseProvider } from 'baseui';
 import * as serviceWorker from './serviceWorker';
 import { Toaster } from 'react-hot-toast';
+import { getUser } from './utility/setUser';
 
 const engine = new Styletron();
 let persistor = persistStore(store);
+getUser();
 
 ReactDOM.render(
   <React.StrictMode>

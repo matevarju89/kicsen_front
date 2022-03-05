@@ -27,7 +27,7 @@ export type RecipeData = {
   postedBy?: UserData | null;
   ratings?: Array<RatingData>;
   title: string;
-  updatedAt: Date;
+  updatedAt?: Date;
 };
 
 export type RatingData = {
