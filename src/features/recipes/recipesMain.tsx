@@ -15,6 +15,7 @@ import { FlexGrid, FlexGridItem } from 'baseui/flex-grid';
 import { Button } from 'baseui/button';
 import { useTranslation } from 'react-i18next';
 import { recipeCategories } from './recipeApi';
+import RecipeCard from './RecipeCard';
 import 'swiper/swiper-bundle.min.css';
 import 'swiper/swiper.min.css';
 import 'swiper/components/scrollbar/scrollbar.min.css';
@@ -123,7 +124,8 @@ export const RecipesMain = () => {
                 {recipeList &&
                   recipeList.map((recipe) => (
                     <SwiperSlide key={recipe.id}>
-                      <Card
+                      <RecipeCard recipe={recipe} />
+                      {/*<Card
                         overrides={{
                           Root: { style: {} },
                           Title: {
@@ -156,7 +158,7 @@ export const RecipesMain = () => {
                             {t('Read more')}
                           </Button>
                         </StyledAction>
-                      </Card>
+                      </Card>*/}
                     </SwiperSlide>
                   ))}
               </Swiper>

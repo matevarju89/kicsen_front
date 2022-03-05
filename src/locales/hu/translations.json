@@ -5,6 +5,10 @@
       "Soup": "Leves",
       "Main": "Főétel",
       "Dessert": "Desszert",
+      "Sweet": "Édes",
+      "Salty": "Sós",
+      "Vegan": "Vegán",
+      "Non-Vegan": "Nem vegán",
       "Recipes": "Receptek",
       "Categories": "Kategóriák",
       "New Recipe": "Új recept",
@@ -28,7 +32,14 @@
       "medium": "Közepes",
       "easy": "Könnyű",
       "hard": "Nehéz",
-      "Show All": "Mutasd az összeset"
+      "Show All": "Mutasd az összeset",
+      "Ingredients": "Hozzávalók",
+      "Choose course type": "Válaszd ki az étel típusát",
+      "Upload Recipe": "Recept feltöltése",
+      "Course type is required": "Kérjük add meg az étel típusát",
+      "Choose salty or sweet": "Édes vagy sós?",
+      "Choose vegan or non-vegan": "Vega vagy nem vega?",
+      "Choosing category is required": "A kategóriaválasztás kötelező"
     }
   }
 }

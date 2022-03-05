@@ -9,6 +9,7 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { loadUserBase, userSelector } from '../user/userSlice';
 import { authSelector } from '../auth/authSlice';
 import { Avatar } from 'baseui/avatar';
+import RecipeAdd from './recipeAdd';
 
 export const RecipesDist = () => {
   const dispatch = useAppDispatch();
@@ -64,6 +65,7 @@ export const RecipesDist = () => {
         <Route exact path={path}>
           <RecipesMain />
         </Route>
+        <Route exact path={`${path}/new`} children={<RecipeAdd />} />
         <Route exact path={`${path}/:category`} children={<RecipeCategory />} />
         <Route path={`${path}/detail/:id`} children={<RecipeDetail />} />
       </Switch>
