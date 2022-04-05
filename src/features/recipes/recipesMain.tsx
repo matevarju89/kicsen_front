@@ -9,6 +9,7 @@ import {
   recipeSelector,
   loadFirstRecipesOfCategories,
 } from './recipeSlice';
+import { userSelector } from '../user/userSlice';
 import { Card, StyledBody, StyledAction } from 'baseui/card';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { FlexGrid, FlexGridItem } from 'baseui/flex-grid';
@@ -38,10 +39,13 @@ export const RecipesMain = () => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const { recipeList } = useAppSelector(recipeSelector);
+  const { families } = useAppSelector(userSelector);
   const prevRef = Array(recipeCategories.length).fill(useRef(null));
   const nextRef = Array(recipeCategories.length).fill(useRef(null));
   useEffect(() => {
-    dispatch(loadFirstRecipesOfCategories());
+    if (families) {
+      dispatch(loadFirstRecipesOfCategories(families[0].id));
+    }
   }, []);
   SwiperCore.use([Navigation, A11y]);
   return (
@@ -164,6 +168,7 @@ export const RecipesMain = () => {
               </Swiper>
               <div slot='container-end'>
                 <span
+                  onClick={() => history.push(`/recipes/${category}s`)}
                   className={css({
                     display: 'inline-block',
                     fontWeight: 'bold',

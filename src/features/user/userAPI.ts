@@ -1,6 +1,6 @@
 // request all users
 import api from '../../utility/http-common';
-import { UserData } from './types';
+import { FamilyData, UserData } from './types';
 
 class UserDataService {
   getAll() {
@@ -12,6 +12,9 @@ class UserDataService {
     operator = 'equals'
   ) {
     return api.get<UserData>(`/users?where[${property}][${operator}]=${value}`);
+  }
+  getUserFamilies(id: string) {
+    return api.get<Array<FamilyData>>(`/users/${id}/families`);
   }
   get(id: string) {
     return api.get<UserData>(`/users/${id}`);

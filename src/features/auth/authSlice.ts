@@ -4,6 +4,8 @@ import { AppDispatch } from '../../app/store';
 import { AuthenticatedUserData, AuthPayloadData } from './types';
 import AuthAPI from './authAPI';
 import setUser from '../../utility/setUser';
+import { clearState as clearUserState } from '../user/userSlice';
+import { clearRecipeState } from '../recipes/recipeSlice';
 
 interface IAuthState {
   username: string;
@@ -52,6 +54,8 @@ export const loginUser = createAsyncThunk<
 export const logoutUser = () => (dispatch: AppDispatch) => {
   setUser(null);
   dispatch(logout());
+  dispatch(clearUserState());
+  dispatch(clearRecipeState());
 };
 
 export const authSlice = createSlice({
@@ -73,6 +77,7 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       state.username = '';
+      return state;
     },
   },
   extraReducers: (builder) => {

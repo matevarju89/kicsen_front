@@ -6,9 +6,10 @@ import { RecipesMain } from './recipesMain';
 import { RecipeCategory } from './recipeCategory';
 import { RecipeDetail } from './recipeDetail';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { loadUserBase, userSelector } from '../user/userSlice';
+import { loadUserBase, loadUserFamily, userSelector } from '../user/userSlice';
 import { authSelector } from '../auth/authSlice';
 import { Avatar } from 'baseui/avatar';
+import { Spinner } from 'baseui/spinner';
 import RecipeAdd from './recipeAdd';
 
 export const RecipesDist = () => {
@@ -17,58 +18,76 @@ export const RecipesDist = () => {
   const { t } = useTranslation();
   const { path } = useRouteMatch();
   const { username } = useAppSelector(authSelector);
-  const { families } = useAppSelector(userSelector);
+  const { families, id } = useAppSelector(userSelector);
   useEffect(() => {
     dispatch(loadUserBase(username));
   }, []);
   return (
     <>
-      <div
-        className={css({
-          width: '300px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flexStart',
-          marginBottom: '50px',
-        })}
-      >
-        <Avatar
-          name={username}
-          size='scale1600'
-          src=''
-          overrides={{
-            Root: {
-              style: { marginRight: '20px' },
-            },
-          }}
-        />
-        <div>
-          <h3
+      {families?.length ? (
+        <>
+          <div
             className={css({
-              margin: '0px 0px 10px 0px',
+              width: '300px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flexStart',
+              marginBottom: '50px',
             })}
           >
-            {username}
-          </h3>
-          <p
-            className={css({
-              margin: 0,
-            })}
-          >
-            {families?.length
-              ? `${t('Your Family')}: ${families[0]}`
-              : t('You are not part of a family')}
-          </p>
+            <Avatar
+              name={username}
+              size='scale1600'
+              src=''
+              overrides={{
+                Root: {
+                  style: { marginRight: '20px' },
+                },
+              }}
+            />
+            <div>
+              <h3
+                className={css({
+                  margin: '0px 0px 10px 0px',
+                })}
+              >
+                {username}
+              </h3>
+              <p
+                className={css({
+                  margin: 0,
+                })}
+              >
+                {families?.length
+                  ? `${t('Your Family')}: ${families[0].description}`
+                  : t('You are not part of a family')}
+              </p>
+            </div>
+          </div>
+          <Switch>
+            <Route exact path={path}>
+              <RecipesMain />
+            </Route>
+            <Route exact path={`${path}/new`} children={<RecipeAdd />} />
+            <Route
+              exact
+              path={`${path}/:category`}
+              children={<RecipeCategory />}
+            />
+            <Route path={`${path}/detail/:id`} children={<RecipeDetail />} />
+          </Switch>
+        </>
+      ) : (
+        <div
+          className={css({
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          })}
+        >
+          <Spinner color='#000' />
         </div>
-      </div>
-      <Switch>
-        <Route exact path={path}>
-          <RecipesMain />
-        </Route>
-        <Route exact path={`${path}/new`} children={<RecipeAdd />} />
-        <Route exact path={`${path}/:category`} children={<RecipeCategory />} />
-        <Route path={`${path}/detail/:id`} children={<RecipeDetail />} />
-      </Switch>
+      )}
     </>
   );
 };

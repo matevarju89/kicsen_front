@@ -24,7 +24,7 @@ const RecipeDifficulty = styled('span', ({ $theme }) => ({
 }));
 
 export const RecipeCategory = () => {
-  //const { category } = useParams();
+  const { category } = useParams<{ category: string }>();
   const dispatch = useAppDispatch();
   const [css, theme] = useStyletron();
   const { t } = useTranslation();
@@ -33,9 +33,16 @@ export const RecipeCategory = () => {
   const { recipeList } = useAppSelector(recipeSelector);
   const history = useHistory();
   useEffect(() => {
-    dispatch(loadUserBase(username));
-    dispatch(loadCategoryPaginated({ category: 'appetizers', fromIndex: 0 }));
-  }, []);
+    if (families) {
+      dispatch(
+        loadCategoryPaginated({
+          family: families[0].id,
+          category: category.slice(0, -1),
+          fromIndex: 0,
+        })
+      );
+    }
+  }, [category]);
   return (
     <>
       <div
@@ -44,7 +51,7 @@ export const RecipeCategory = () => {
         })}
       >
         <div>
-          <h2>{t(`Appetizers`)}</h2>
+          <h2>{t(category.charAt(0).toUpperCase() + category.slice(1))}</h2>
           <FlexGrid
             flexGridColumnCount={4}
             flexGridColumnGap='scale800'
