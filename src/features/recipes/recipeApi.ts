@@ -8,9 +8,9 @@ class RecipeDataService {
     return http.get<Array<RecipeData>>('/recipes');
   }
 
-  getfirstRecipesOfCategory(howMany: number, category: string) {
+  getfirstRecipesOfCategory(howMany: number, category: string, family: string) {
     return http.get<Array<RecipeData>>(
-      `/recipes?where[category1]equals=${category}&take=${howMany}`
+      `/families/${family}/recipes?where[category1]equals=${category}&take=${howMany}`
     );
   }
 
@@ -19,10 +19,11 @@ class RecipeDataService {
     value: string,
     howMany: number,
     fromIndex: number,
+    family: string,
     operator = 'equals'
   ) {
     return http.get<RecipeData>(
-      `/recipes?where[${property}][${operator}]=${value}&take=${howMany}&skip=${fromIndex}`
+      `/families/${family}/recipes?where[${property}][${operator}]=${value}&take=${howMany}&skip=${fromIndex}`
     );
   }
 

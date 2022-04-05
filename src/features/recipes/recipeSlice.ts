@@ -42,12 +42,13 @@ export const loadRecipe = createAsyncThunk(
 
 export const loadFirstRecipesOfCategories = createAsyncThunk(
   'recipes/getfirstrecipesofcategories',
-  async () => {
+  async (family: string) => {
     let results: any = [];
     const promises = recipeCategories.map(async (category) => {
       const response = (await recipeAPI.getfirstRecipesOfCategory(
         6,
-        category
+        category,
+        family
       )) as any;
       if (response.status === 200) {
         results = [...results, ...response.data];
@@ -60,12 +61,13 @@ export const loadFirstRecipesOfCategories = createAsyncThunk(
 
 export const loadCategoryPaginated = createAsyncThunk(
   'recipes/getcategory',
-  async (category: any, fromIndex: any) => {
+  async (arg: any) => {
     const response = (await recipeAPI.getBySinglePropertyValuePaginated(
       'category1',
-      category,
+      arg.category,
       12,
-      fromIndex
+      arg.fromIndex,
+      arg.family
     )) as any;
     if (response.status === 200) {
       return response.data as RecipeData[];
@@ -78,8 +80,18 @@ export const recipeSlice = createSlice({
   initialState,
   reducers: {
     clearRecipeDetailState: (state) => {
+      state.recipeList = [];
       state.recipeDetail = null;
       state.recipeDetailError = '';
+      return state;
+    },
+    clearRecipeState: (state) => {
+      state.recipeList = [];
+      state.recipeDetail = null;
+      state.recipeDetailError = '';
+      state.count = 0;
+      state.recipesLoading = false;
+      state.recipesError = '';
       return state;
     },
   },
@@ -118,7 +130,7 @@ export const recipeSlice = createSlice({
         return state;
       })
       .addCase(loadCategoryPaginated.fulfilled, (state, { payload }) => {
-        state.recipeList = [...state.recipeList, ...(payload as RecipeData[])];
+        state.recipeList = [...(payload as RecipeData[])];
         state.recipesLoading = false;
         state.count = payload ? payload.length : 0;
         state.recipesError = '';
@@ -152,6 +164,6 @@ export const recipeSlice = createSlice({
       });
   },
 });
-export const { clearRecipeDetailState } = recipeSlice.actions;
+export const { clearRecipeDetailState, clearRecipeState } = recipeSlice.actions;
 export const recipeSelector = (state: RootState) => state.recipes;
 export default recipeSlice.reducer;

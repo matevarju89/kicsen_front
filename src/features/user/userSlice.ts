@@ -47,11 +47,27 @@ export const loadUserBase = createAsyncThunk<
       'username',
       username
     )) as any;
+    if (response.status === 200) {
+      const familyResponse = await userAPI.getUserFamilies(response.data[0].id);
+      response.data[0].families = familyResponse.data;
+    }
     return response.data[0] as UserData;
   } catch (err: any) {
     return thunkAPI.rejectWithValue(err.response.data as IUserAPIError);
   }
 });
+
+export const loadUserFamily = createAsyncThunk(
+  'users/loadFamily',
+  async (id: string) => {
+    try {
+      const response = await userAPI.getUserFamilies(id);
+      return response.data as FamilyData[];
+    } catch (err: any) {
+      throw err;
+    }
+  }
+);
 
 export const userSlice = createSlice({
   name: 'user',
@@ -76,6 +92,7 @@ export const userSlice = createSlice({
     builder
       .addCase(loadUserBase.fulfilled, (state, { payload }) => {
         state.firstName = payload.firstName;
+        state.families = payload.families;
         state.id = payload.id;
         state.lastName = payload.lastName;
         state.roles = payload.roles;

@@ -4,7 +4,7 @@ import { useStyletron } from 'baseui';
 import { Select, Value } from 'baseui/select';
 import { useTranslation } from 'react-i18next';
 
-const SingleSelectInput = (props: any) => {
+const SelectInput = (props: any) => {
   const [css] = useStyletron();
   const [t] = useTranslation();
   const [inputValue, setInputValue] = useState<Value>([]);
@@ -16,12 +16,21 @@ const SingleSelectInput = (props: any) => {
         options={props.options}
         placeholder={props.placeholder}
         valueKey={props.valueKey}
+        multi={props.multi}
         onChange={(params) => {
           setInputValue(params.value);
-          if (params.value[0]) {
-            helpers.setValue(params.value[0][props.name]);
+          if (!props.multi) {
+            if (params.value[0]) {
+              helpers.setValue(params.value[0][props.name]);
+            } else {
+              helpers.setValue('');
+            }
           } else {
-            helpers.setValue('');
+            if (params.value[0]) {
+              helpers.setValue(params.value.map((obj) => obj[props.name]));
+            } else {
+              helpers.setValue([]);
+            }
           }
         }}
         value={inputValue}
@@ -39,4 +48,4 @@ const SingleSelectInput = (props: any) => {
   );
 };
 
-export default SingleSelectInput;
+export default SelectInput;

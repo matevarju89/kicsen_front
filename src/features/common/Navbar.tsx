@@ -106,7 +106,18 @@ const NavBar = () => {
   return (
     <>
       <AppNavBar
-        title='Kicsen App'
+        title={
+          <a
+            className={css({
+              textDecoration: 'none',
+              color: '#000',
+              fontFamily: 'cursive',
+            })}
+            href='/'
+          >
+            Kicsen App
+          </a>
+        }
         mainItems={mainItems}
         userItems={currentUserItems}
         onMainItemSelect={handleMainItemSelect}

@@ -12,18 +12,21 @@ import { useStyletron } from 'baseui';
 import { FormControl } from 'baseui/form-control';
 import { Button } from 'baseui/button';
 import { Select, Value } from 'baseui/select';
+import { FileUploader } from 'baseui/file-uploader';
 import FormInput from '../common/FormInput';
 import { RecipeData, RecipeImage } from './types';
 import { useAppDispatch } from '../../app/hooks';
 import { useTranslation } from 'react-i18next';
-import SingleSelectInput from '../common/SingleSelectInput';
+import SelectInput from '../common/SelectInput';
+import TextArea from '../common/TextArea';
+import IngredientInputGroup from '../common/IngredientInputGroup';
 
 type RecipePayloadData = {
   category1: 'appetizer' | 'soup' | 'main' | 'dessert';
   category2: 'salty' | 'sweet';
   category3: 'vegan' | 'nonvegan';
   category4?: Array<
-    'chicken' | 'seafood' | 'beef' | 'veal' | 'lamb' | 'vegetable' | 'Fruit'
+    'chicken' | 'seafood' | 'beef' | 'veal' | 'lamb' | 'vegetable' | 'fruit'
   >;
   description: string;
   difficulty: 'easy' | 'medium' | 'hard';
@@ -48,10 +51,12 @@ const RecipeAdd = () => {
   const dispatch = useAppDispatch();
   const [t] = useTranslation();
   const [cat1Value, setCat1Value] = useState<Value>([]);
+  const [imgErrorMessage, setImgErrorMessage] = useState('');
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={yup.object({
+        title: yup.string().required(t('The name of the dish is required')),
         category1: yup
           .mixed()
           .oneOf(['appetizer', 'soup', 'main', 'dessert'])
@@ -64,6 +69,26 @@ const RecipeAdd = () => {
           .mixed()
           .oneOf(['vegan', 'nonvegan'])
           .required(t('Choosing category is required')),
+        category4: yup
+          .array()
+          .of(
+            yup
+              .mixed()
+              .oneOf([
+                'chicken',
+                'seafood',
+                'beef',
+                'veal',
+                'lamb',
+                'vegetable',
+                'fruit',
+              ])
+          ),
+        description: yup
+          .string()
+          .max(500, t('Description should be max 500 characters'))
+          .required(t('Description is required')),
+        ingredients: yup.string().required(t('Ingredients are required')),
       })}
       onSubmit={(values, actions) => {
         setTimeout(() => {
@@ -74,7 +99,14 @@ const RecipeAdd = () => {
     >
       {(props: FormikProps<RecipePayloadData>) => (
         <Form>
-          <SingleSelectInput
+          <FormInput
+            id='title'
+            name='title'
+            type='text'
+            placeholder={t('Add the name of the dish')}
+            clearOnEscape
+          />
+          <SelectInput
             name='category1'
             options={[
               { label: t('Appetizer'), category1: 'appetizer' },
@@ -84,8 +116,9 @@ const RecipeAdd = () => {
             ]}
             placeholder={t('Choose course type')}
             valueKey='category1'
+            multi={false}
           />
-          <SingleSelectInput
+          <SelectInput
             name='category2'
             options={[
               { label: t('Salty'), category2: 'salty' },
@@ -93,8 +126,9 @@ const RecipeAdd = () => {
             ]}
             placeholder={t('Choose salty or sweet')}
             valueKey='category2'
+            multi={false}
           />
-          <SingleSelectInput
+          <SelectInput
             name='category3'
             options={[
               { label: t('Vegan'), category3: 'vegan' },
@@ -102,6 +136,39 @@ const RecipeAdd = () => {
             ]}
             placeholder={t('Choose vegan or non-vegan')}
             valueKey='category3'
+            multi={false}
+          />
+          <SelectInput
+            name='category4'
+            options={[
+              { label: t('Chicken'), category4: 'chicken' },
+              { label: t('Seafood'), category4: 'seafood' },
+              { label: t('Beef'), category4: 'beef' },
+              { label: t('Veal'), category4: 'veal' },
+              { label: t('Lamb'), category4: 'lamb' },
+              { label: t('Vegetable'), category4: 'vegetable' },
+              { label: t('Fruit'), category4: 'fruit' },
+            ]}
+            placeholder={t('Choose type tags')}
+            valueKey='category4'
+            multi={true}
+          />
+          <TextArea
+            placeholder={t('Add preparation instructions')}
+            id='description'
+            name='description'
+            clearOnEscape={false}
+          />
+          <IngredientInputGroup name='ingredients' />
+          <FileUploader
+            errorMessage={imgErrorMessage}
+            overrides={{
+              Root: {
+                style: {
+                  marginTop: '20px',
+                },
+              },
+            }}
           />
           <Button
             type='submit'
