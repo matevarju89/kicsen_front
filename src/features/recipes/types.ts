@@ -15,7 +15,7 @@ export type RecipeData = {
   category2?: 'salty' | 'sweet';
   category3?: 'vegan' | 'nonvegan';
   category4?: Array<
-    'chicken' | 'seafood' | 'beef' | 'veal' | 'lamb' | 'vegetable' | 'Fruit'
+    'chicken' | 'seafood' | 'beef' | 'veal' | 'lamb' | 'vegetable' | 'fruit'
   >;
   createdAt: Date;
   description: string;
@@ -28,6 +28,7 @@ export type RecipeData = {
   ratings?: Array<RatingData>;
   title: string;
   updatedAt?: Date;
+  family: { id: string };
 };
 
 export type RatingData = {

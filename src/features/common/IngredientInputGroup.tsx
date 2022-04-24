@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useField } from 'formik';
 import { useStyletron } from 'baseui';
 import { FormControl } from 'baseui/form-control';
@@ -19,22 +19,31 @@ const IngredientInputGroup = (props: any) => {
 
   const updateIngredientList = () => {
     if (ingredientValue && quantityValue) {
+      helpers.setValue(
+        ingredientList + ingredientValue + ': ' + quantityValue + ','
+      );
       setIngredientList(
         ingredientList + ingredientValue + ': ' + quantityValue + ','
       );
       setQuantityValue('');
       setIngredientValue('');
-      helpers.setValue(ingredientList);
+
       if (ingredientInputRef && ingredientInputRef.current) {
         ingredientInputRef.current.focus();
       }
     }
   };
 
+  useEffect(() => {
+    const { initialValue } = props;
+    if (initialValue) {
+      setIngredientList(initialValue + ',');
+    }
+  }, [props.initialValue]);
+
   return (
     <>
       <FormControl
-        label={t('Add ingredient names and quantities')}
         overrides={{
           Label: { style: { marginTop: '20px', marginBottom: '20px' } },
         }}
@@ -51,6 +60,8 @@ const IngredientInputGroup = (props: any) => {
                 if (e.key === 'Enter' && ingredientValue && quantityValue) {
                   e.preventDefault();
                   updateIngredientList();
+                } else if (e.key === 'Enter') {
+                  e.preventDefault();
                 } else if (e.key === ',') {
                   e.preventDefault();
                   return false;
@@ -69,6 +80,8 @@ const IngredientInputGroup = (props: any) => {
                 if (e.key === 'Enter' && ingredientValue && quantityValue) {
                   e.preventDefault();
                   updateIngredientList();
+                } else if (e.key === 'Enter') {
+                  e.preventDefault();
                 } else if (e.key === ',') {
                   e.preventDefault();
                   return false;

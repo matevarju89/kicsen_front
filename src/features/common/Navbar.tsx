@@ -1,77 +1,78 @@
 import React, { useEffect, useMemo } from 'react';
-import { useStyletron } from 'baseui';
+import { useStyletron, styled } from 'baseui';
 import { useAppDispatch } from '../../app/hooks';
 import { logoutUser } from '../auth/authSlice';
 import { AppNavBar, setItemActive, NavItemT } from 'baseui/app-nav-bar';
 import { ChevronDown, ChevronRight, Delete, Overflow } from 'baseui/icon';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { authSelector } from '../auth/authSlice';
 
-type Ref = HTMLAnchorElement;
-
-/*const LinkComponent = React.forwardRef<Ref, any>(({ ...props }, ref) => {
-  const [css] = useStyletron();
-  return (
-    <a
-      ref={ref}
-      className={css({
-        display: 'block',
-        textDecoration: 'none',
-      })}
-      {...props}
-    >
-      {props.children}
-    </a>
-  );
-});*/
+const StyledNavLink = styled(Link, (props) => ({
+  textDecoration: 'none',
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: '#6b6b6b',
+  paddingTop: '20px',
+  paddingBottom: '20px',
+  ':hover': {
+    color: '#000',
+  },
+}));
 
 const NavBar = () => {
   const { username, isAuthenticated } = useAppSelector(authSelector);
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const { t } = useTranslation();
   const [css] = useStyletron();
   const handleMainItemSelect = (item: NavItemT) => {
     setMainItems((prev) => setItemActive(prev, item));
+    if (item?.info?.linkTo) {
+      history.push(item.info.linkTo);
+    }
   };
   const currentMenuItems: NavItemT[] = useMemo(() => {
     if (isAuthenticated) {
       return [
         {
-          icon: ChevronRight,
+          /*icon: ChevronRight,*/
           label: t('Recipes'),
           info: { linkTo: '/recipes' },
         },
         {
-          icon: ChevronDown,
+          //icon: ChevronRight,
           label: t('Categories'),
           navExitIcon: Delete,
           children: [
             {
-              icon: ChevronRight,
+              //icon: ChevronRight,
               label: t('Appetizer'),
               info: { linkTo: '/recipes/appetizers' },
             },
             {
-              icon: ChevronRight,
+              //icon: ChevronRight,
               label: t('Soup'),
               info: { linkTo: '/recipes/soups' },
             },
             {
-              icon: ChevronRight,
+              //icon: ChevronRight,
               label: t('Main'),
               info: { linkTo: '/recipes/mains' },
             },
             {
-              icon: ChevronRight,
+              //icon: ChevronRight,
               label: t('Dessert'),
               info: { linkTo: '/recipes/desserts' },
             },
           ],
         },
         {
-          icon: ChevronRight,
+          //icon: ChevronRight,
           label: t('New Recipe'),
           info: { linkTo: '/recipes/new' },
         },
@@ -123,33 +124,28 @@ const NavBar = () => {
         onMainItemSelect={handleMainItemSelect}
         username={isAuthenticated ? username : t('Anonymous')}
         usernameSubtitle={t('Welcome')}
+        onUserItemSelect={(item) => {
+          console.log(item);
+          if (item?.info?.linkTo) {
+            history.push(item.info.linkTo);
+          }
+          if (item?.info?.clickAction === 'logout') {
+            dispatch(logoutUser());
+          }
+        }}
         userImgUrl=''
         overrides={{
-          MainMenuItem: {
-            style: {
-              padding: 0,
+          MobileDrawer: {
+            props: {
+              overrides: {
+                Root: {
+                  style: {
+                    zIndex: 10,
+                  },
+                },
+              },
             },
           },
-        }}
-        mapItemToNode={(item) => {
-          if (item?.info?.linkTo) {
-            return (
-              <Link
-                to={item.info.linkTo}
-                className={css({
-                  textDecoration: 'none',
-                })}
-              >
-                {item.label}
-              </Link>
-            );
-          } else if (item?.info?.clickAction) {
-            return (
-              <span onClick={() => dispatch(logoutUser())}>{item.label}</span>
-            );
-          } else {
-            return <span>{item.label}</span>;
-          }
         }}
       />
     </>

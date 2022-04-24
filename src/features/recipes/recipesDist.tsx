@@ -11,6 +11,7 @@ import { authSelector } from '../auth/authSlice';
 import { Avatar } from 'baseui/avatar';
 import { Spinner } from 'baseui/spinner';
 import RecipeAdd from './recipeAdd';
+import RecipeEdit from './recipeEdit';
 
 export const RecipesDist = () => {
   const dispatch = useAppDispatch();
@@ -69,12 +70,16 @@ export const RecipesDist = () => {
               <RecipesMain />
             </Route>
             <Route exact path={`${path}/new`} children={<RecipeAdd />} />
+
             <Route
               exact
               path={`${path}/:category`}
               children={<RecipeCategory />}
             />
             <Route path={`${path}/detail/:id`} children={<RecipeDetail />} />
+            <Route path={`${path}/edit/:id`}>
+              <RecipeEdit />
+            </Route>
           </Switch>
         </>
       ) : (

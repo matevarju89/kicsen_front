@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
 import {
   Formik,
   FormikProps,
@@ -7,8 +8,10 @@ import {
   useField,
   FieldHookConfig,
 } from 'formik';
+import toast from 'react-hot-toast';
 import * as yup from 'yup';
 import { useStyletron } from 'baseui';
+import { useHistory, useParams } from 'react-router-dom';
 import { FormControl } from 'baseui/form-control';
 import { Button } from 'baseui/button';
 import { Select, Value } from 'baseui/select';
@@ -21,43 +24,53 @@ import SelectInput from '../common/SelectInput';
 import TextArea from '../common/TextArea';
 import IngredientInputGroup from '../common/IngredientInputGroup';
 import { userSelector } from '../user/userSlice';
-import { addRecipe } from '../recipes/recipeSlice';
+import {
+  clearRecipeDetailState,
+  loadRecipe,
+  recipeSelector,
+  updateRecipe,
+} from '../recipes/recipeSlice';
+import { RecipePayloadData } from './recipeAdd';
 
-export type RecipePayloadData = {
-  category1: 'appetizer' | 'soup' | 'main' | 'dessert';
-  category2: 'salty' | 'sweet';
-  category3: 'vegan' | 'nonvegan';
-  category4?: Array<
-    'chicken' | 'seafood' | 'beef' | 'veal' | 'lamb' | 'vegetable' | 'fruit'
-  >;
-  description: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  images?: Array<RecipeImage>;
-  ingredients: string;
-  title: string;
-  family: { id: string };
-};
-
-const initialValues: RecipePayloadData = {
-  category1: '' as RecipePayloadData['category1'],
-  category2: '' as RecipePayloadData['category2'],
-  category3: '' as RecipePayloadData['category3'],
-  category4: [],
-  description: '',
-  difficulty: '' as RecipePayloadData['difficulty'],
-  //images: [],
-  ingredients: '',
-  title: '',
-  family: { id: '' },
-};
-
-const RecipeAdd = () => {
+const RecipeEdit = () => {
   const dispatch = useAppDispatch();
+  const { id } = useParams<{ id: string }>();
+  const history = useHistory();
   const [t] = useTranslation();
   const [css] = useStyletron();
   const [cat1Value, setCat1Value] = useState<Value>([]);
   const [imgErrorMessage, setImgErrorMessage] = useState('');
   const { families } = useAppSelector(userSelector);
+  const { recipeDetail } = useAppSelector(recipeSelector);
+
+  useEffect(() => {
+    dispatch(loadRecipe(id));
+    return () => {
+      dispatch(clearRecipeDetailState());
+    };
+  }, [id]);
+
+  const initialValues: RecipePayloadData = {
+    category1: recipeDetail?.category1
+      ? recipeDetail.category1
+      : ('' as RecipePayloadData['category1']),
+    category2: recipeDetail?.category2
+      ? recipeDetail.category2
+      : ('' as RecipePayloadData['category2']),
+    category3: recipeDetail?.category3
+      ? recipeDetail.category3
+      : ('' as RecipePayloadData['category3']),
+    category4: recipeDetail?.category4 ? recipeDetail.category4 : [],
+    description: recipeDetail?.description ? recipeDetail.description : '',
+    difficulty: recipeDetail?.difficulty
+      ? recipeDetail.difficulty
+      : ('' as RecipePayloadData['difficulty']),
+    //images: [],
+    ingredients: recipeDetail?.ingredients ? recipeDetail.ingredients : '',
+    title: recipeDetail?.title ? recipeDetail.title : '',
+    family: recipeDetail?.family ? recipeDetail.family : { id: '' },
+  };
+
   return (
     <Formik
       initialValues={initialValues}
@@ -101,13 +114,20 @@ const RecipeAdd = () => {
         ingredients: yup.string().required(t('Ingredients are required')),
       })}
       onSubmit={(values, actions) => {
-        setTimeout(() => {
+        setTimeout(async () => {
           if (families) {
             values.family = { id: families[0].id };
-            console.log(JSON.stringify(values, null, 2));
-            dispatch(addRecipe(values));
+            const resultAction = await dispatch(
+              updateRecipe({ recipe: values, id })
+            );
+            try {
+              unwrapResult(resultAction);
+              history.push(`/recipes/detail/${id}`);
+            } catch (err) {
+              toast.error(t('Recipe uplad error'));
+            }
           } else {
-            alert('Error: Family is not detectable');
+            toast.error(t('Error: Family is not detectable'));
           }
         }, 1000);
       }}
@@ -130,6 +150,7 @@ const RecipeAdd = () => {
           />
           <SelectInput
             name='category1'
+            initialValue={initialValues.category1}
             options={[
               { label: t('Appetizer'), category1: 'appetizer' },
               { label: t('Soup'), category1: 'soup' },
@@ -142,6 +163,7 @@ const RecipeAdd = () => {
           />
           <SelectInput
             name='category2'
+            initialValue={initialValues.category2}
             options={[
               { label: t('Salty'), category2: 'salty' },
               { label: t('Sweet'), category2: 'sweet' },
@@ -152,6 +174,7 @@ const RecipeAdd = () => {
           />
           <SelectInput
             name='category3'
+            initialValue={initialValues.category3}
             options={[
               { label: t('Vegan'), category3: 'vegan' },
               { label: t('Non-Vegan'), category3: 'nonvegan' },
@@ -162,6 +185,7 @@ const RecipeAdd = () => {
           />
           <SelectInput
             name='category4'
+            initialValue={initialValues.category4}
             options={[
               { label: t('Chicken'), category4: 'chicken' },
               { label: t('Seafood'), category4: 'seafood' },
@@ -177,6 +201,7 @@ const RecipeAdd = () => {
           />
           <SelectInput
             name='difficulty'
+            initialValue={initialValues.difficulty}
             options={[
               { label: t('easy'), difficulty: 'easy' },
               { label: t('medium'), difficulty: 'medium' },
@@ -194,7 +219,10 @@ const RecipeAdd = () => {
           >
             {t('What are the ingredients?')}
           </p>
-          <IngredientInputGroup name='ingredients' />
+          <IngredientInputGroup
+            initialValue={initialValues.ingredients}
+            name='ingredients'
+          />
           <p
             className={css({
               fontWeight: 'bold',
@@ -230,7 +258,7 @@ const RecipeAdd = () => {
               },
             }}
           >
-            {t('Upload Recipe')}
+            {t('Update Recipe')}
           </Button>
         </Form>
       )}
@@ -238,4 +266,4 @@ const RecipeAdd = () => {
   );
 };
 
-export default RecipeAdd;
+export default RecipeEdit;

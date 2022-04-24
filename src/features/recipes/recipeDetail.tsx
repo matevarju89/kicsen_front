@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useStyletron } from 'baseui';
 import { useTranslation } from 'react-i18next';
 import { Block } from 'baseui/block';
+import { Button, KIND, SHAPE, SIZE } from 'baseui/button';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   recipeSelector,
   loadRecipe,
   clearRecipeDetailState,
 } from './recipeSlice';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Skeleton } from 'baseui/skeleton';
 
 const CategoryTag = ({ children }: { children: React.ReactNode }) => {
@@ -29,6 +30,7 @@ const CategoryTag = ({ children }: { children: React.ReactNode }) => {
 
 export const RecipeDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const { recipeDetail, recipeDetailError, recipeDetailLoading } =
     useAppSelector(recipeSelector);
@@ -92,7 +94,7 @@ export const RecipeDetail = () => {
             </CategoryTag>
             {recipeDetail.category4 &&
               recipeDetail.category4.map((category) => {
-                return <CategoryTag>{category}</CategoryTag>;
+                return <CategoryTag key={category}>{category}</CategoryTag>;
               })}
           </Block>
           <h2
@@ -100,7 +102,21 @@ export const RecipeDetail = () => {
               marginBottom: '10px',
             })}
           >
-            {recipeDetail.title}
+            <span
+              className={css({
+                marginRight: '10px',
+              })}
+            >
+              {recipeDetail.title}
+            </span>
+            <Button
+              onClick={() => history.push(`/recipes/edit/${recipeDetail.id}`)}
+              kind={KIND.secondary}
+              shape={SHAPE.pill}
+              size={SIZE.mini}
+            >
+              {t('Edit recipe')}
+            </Button>
           </h2>
           <Block marginBottom='30px'>
             <span
@@ -125,6 +141,7 @@ export const RecipeDetail = () => {
             {recipeDetail.ingredients.split(',').map((ingredient) => {
               return (
                 <p
+                  key={ingredient}
                   className={css({
                     marginTop: '0px',
                     marginBottom: '5px',

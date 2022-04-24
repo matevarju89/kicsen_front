@@ -47,6 +47,7 @@
       "Ingredients": "Hozzávalók",
       "Choose course type": "Válaszd ki az étel típusát",
       "Upload Recipe": "Recept feltöltése",
+      "Update Recipe": "Recept frissítése",
       "Course type is required": "Kérjük add meg az étel típusát",
       "Choose salty or sweet": "Édes vagy sós?",
       "Choose vegan or non-vegan": "Vega vagy nem vega?",
@@ -61,7 +62,17 @@
       "Add ingredient names and quantities": "Add meg az alapanyagok neveit és a mennyiségeiket",
       "Ingredient": "Alapanyag",
       "Quantity": "Mennyiség",
-      "Add": "Hozzáad"
+      "Add": "Hozzáad",
+      "Add the basic information about the recipe!": "Add meg az étel alap adatait!",
+      "How is it made?": "Hogy készül?",
+      "What are the ingredients?": "Mik a hozzávalók?",
+      "Choosing difficulty is required": "A néhézségi fok kiválasztása kötelező",
+      "Choose difficulty": "Válassz nehézségi fokot",
+      "Search for a recipe name or ingredient": "Keress egy receptre vagy hozzávalóra",
+      "Discover the depht of your family's cookbook!": "Fedezd fel a családod receptgyűjteményét!",
+      "Edit recipe": "Recept szerkesztése",
+      "Recipe uplad error": "Recept feltöltési hiba",
+      "Error: Family is not detectable": "Hiba: a családod nem található"
     }
   }
 }
