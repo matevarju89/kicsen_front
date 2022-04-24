@@ -7,12 +7,14 @@ import ProtectedRoute from './features/common/ProtectedRoute';
 import Navbar from './features/common/Navbar';
 import { RecipesDist } from './features/recipes/recipesDist';
 import { getUser } from './utility/setUser';
+import ScrollToTop from './features/common/ScrollToTop';
 
 const User = react.lazy(() => import('./features/user/user'));
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Navbar />
       <Layout>
         <Switch>

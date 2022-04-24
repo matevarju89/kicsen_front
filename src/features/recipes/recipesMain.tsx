@@ -17,6 +17,7 @@ import { Button } from 'baseui/button';
 import { useTranslation } from 'react-i18next';
 import { recipeCategories } from './recipeApi';
 import RecipeCard from './RecipeCard';
+import SearchBox from '../search/searchBox';
 import 'swiper/swiper-bundle.min.css';
 import 'swiper/swiper.min.css';
 import 'swiper/components/scrollbar/scrollbar.min.css';
@@ -50,6 +51,7 @@ export const RecipesMain = () => {
   SwiperCore.use([Navigation, A11y]);
   return (
     <>
+      <SearchBox />
       {recipeCategories.map((category, index) => {
         return (
           <div

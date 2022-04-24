@@ -24,8 +24,8 @@ const TextArea = (props: ITextAreaFieldProps) => {
         overrides={{
           Input: {
             style: {
-              maxHeight: '300px',
-              minHeight: '100px',
+              maxHeight: '400px',
+              minHeight: '200px',
               minWidth: '300px',
               width: '100vw',
               resize: 'both',

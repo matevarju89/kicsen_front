@@ -13,11 +13,13 @@ import {
 import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/user/userSlice';
 import recipesReducer from '../features/recipes/recipeSlice';
+import searchReducer from '../features/search/searchSlice';
 
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
   recipes: recipesReducer,
+  search: searchReducer,
 });
 const persistConfig = {
   key: 'root',

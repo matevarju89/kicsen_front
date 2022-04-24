@@ -1,14 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useField } from 'formik';
 import { useStyletron } from 'baseui';
 import { Select, Value } from 'baseui/select';
-import { useTranslation } from 'react-i18next';
 
 const SelectInput = (props: any) => {
   const [css] = useStyletron();
-  const [t] = useTranslation();
   const [inputValue, setInputValue] = useState<Value>([]);
   const [field, meta, helpers] = useField(props);
+
+  useEffect(() => {
+    const { initialValue, multi, options, name } = props;
+    if (initialValue) {
+      if (!multi) {
+        const initialSelection = options.filter((option: any) => {
+          return option[name] === initialValue;
+        });
+        initialSelection[0] && setInputValue(initialSelection);
+      } else {
+        const initialSelection = initialValue.map((val: any) => {
+          return options.filter((option: any) => {
+            return option[name] === val;
+          })[0];
+        });
+        initialSelection[0] && setInputValue(initialSelection);
+      }
+    }
+  }, []);
   return (
     <>
       <Select

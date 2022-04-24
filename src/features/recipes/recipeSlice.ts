@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { RecipeData } from './types';
 import recipeAPI, { recipeCategories } from './recipeApi';
+import { RecipePayloadData } from './recipeAdd';
 
 interface IRecipeListState {
   count: number;
@@ -37,6 +38,26 @@ export const loadRecipe = createAsyncThunk(
     //if (response.status === 200) {
     return response.data as RecipeData;
     //}
+  }
+);
+
+export const addRecipe = createAsyncThunk(
+  'recipes/add',
+  async (recipe: RecipePayloadData) => {
+    const response = (await recipeAPI.create(recipe)) as any;
+    if (response.status === 200) {
+      return response.data as RecipeData;
+    }
+  }
+);
+
+export const updateRecipe = createAsyncThunk(
+  'recipes/update',
+  async ({ recipe, id }: { recipe: RecipePayloadData; id: string }) => {
+    const response = (await recipeAPI.update(recipe, id)) as any;
+    if (response.status === 200) {
+      return response.data as RecipeData;
+    }
   }
 );
 
