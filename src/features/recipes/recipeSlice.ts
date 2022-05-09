@@ -6,6 +6,7 @@ import { RecipePayloadData } from './recipeAdd';
 
 interface IRecipeListState {
   count: number;
+  filteredCount: number;
   recipeList: Array<RecipeData>;
   recipeDetail: RecipeData | null;
   recipesLoading: boolean;
@@ -16,6 +17,7 @@ interface IRecipeListState {
 
 const initialState: IRecipeListState = {
   count: 0,
+  filteredCount: 0,
   recipeList: [],
   recipesLoading: false,
   recipeDetail: null,
@@ -80,18 +82,33 @@ export const loadFirstRecipesOfCategories = createAsyncThunk(
   }
 );
 
+export const numberOfResultsPerPage = 2;
+
 export const loadCategoryPaginated = createAsyncThunk(
   'recipes/getcategory',
   async (arg: any) => {
     const response = (await recipeAPI.getBySinglePropertyValuePaginated(
       'category1',
       arg.category,
-      12,
+      numberOfResultsPerPage,
       arg.fromIndex,
       arg.family
     )) as any;
     if (response.status === 200) {
       return response.data as RecipeData[];
+    }
+  }
+);
+
+export const getCountOfCategory = createAsyncThunk(
+  'recipes/getCountOfCategory',
+  async (arg: any) => {
+    const response = await recipeAPI.getRecipeCountOfCategory(
+      arg.category,
+      arg.family
+    );
+    if (response.status === 200) {
+      return response.data as number;
     }
   }
 );
@@ -118,6 +135,10 @@ export const recipeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getCountOfCategory.fulfilled, (state, { payload }) => {
+        state.filteredCount = payload ? payload : 0;
+        return state;
+      })
       .addCase(loadAllRecipes.fulfilled, (state, { payload }) => {
         state.recipeList = payload as RecipeData[];
         state.recipesLoading = false;
