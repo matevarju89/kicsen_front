@@ -52,22 +52,22 @@ const NavBar = () => {
             {
               //icon: ChevronRight,
               label: t('Appetizer'),
-              info: { linkTo: '/recipes/appetizers' },
+              info: { linkTo: '/recipes/appetizers?page=1' },
             },
             {
               //icon: ChevronRight,
               label: t('Soup'),
-              info: { linkTo: '/recipes/soups' },
+              info: { linkTo: '/recipes/soups?page=1' },
             },
             {
               //icon: ChevronRight,
               label: t('Main'),
-              info: { linkTo: '/recipes/mains' },
+              info: { linkTo: '/recipes/mains?page=1' },
             },
             {
               //icon: ChevronRight,
               label: t('Dessert'),
-              info: { linkTo: '/recipes/desserts' },
+              info: { linkTo: '/recipes/desserts?page=1' },
             },
           ],
         },
@@ -125,7 +125,6 @@ const NavBar = () => {
         username={isAuthenticated ? username : t('Anonymous')}
         usernameSubtitle={t('Welcome')}
         onUserItemSelect={(item) => {
-          console.log(item);
           if (item?.info?.linkTo) {
             history.push(item.info.linkTo);
           }

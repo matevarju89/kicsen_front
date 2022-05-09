@@ -1,17 +1,25 @@
-import react, { useEffect, useRef } from 'react';
+import react, { useEffect, useState } from 'react';
 import { useStyletron, styled } from 'baseui';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useQuery } from '../../utility/routerHooks';
 import { loadUserBase, userSelector } from '../user/userSlice';
-import { recipeSelector, loadCategoryPaginated } from './recipeSlice';
+import {
+  recipeSelector,
+  loadCategoryPaginated,
+  getCountOfCategory,
+} from './recipeSlice';
 import { authSelector } from '../auth/authSlice';
 import { Avatar } from 'baseui/avatar';
 import { Card, StyledBody, StyledAction } from 'baseui/card';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { FlexGrid, FlexGridItem } from 'baseui/flex-grid';
 import { Button } from 'baseui/button';
+import { Pagination } from 'baseui/pagination';
 import { useTranslation } from 'react-i18next';
 import { recipeCategories } from './recipeApi';
+import { numberOfResultsPerPage } from './recipeSlice';
+import { number } from 'yup';
 
 const RecipeDifficulty = styled('span', ({ $theme }) => ({
   ...$theme.typography.font150,
@@ -30,19 +38,36 @@ export const RecipeCategory = () => {
   const { t } = useTranslation();
   const { username } = useAppSelector(authSelector);
   const { families } = useAppSelector(userSelector);
-  const { recipeList } = useAppSelector(recipeSelector);
+  const { recipeList, filteredCount } = useAppSelector(recipeSelector);
   const history = useHistory();
+  const location = useLocation();
+  let query = useQuery();
+  let pageNumber: number = query.get('page') ? Number(query.get('page')) : 1;
+  const [currentPage, setCurrentPage] = useState(pageNumber);
+  useEffect(() => {
+    if (families) {
+      dispatch(
+        getCountOfCategory({
+          family: families[0].id,
+          category: category.slice(0, -1),
+        })
+      );
+    }
+  }, [category]);
   useEffect(() => {
     if (families) {
       dispatch(
         loadCategoryPaginated({
           family: families[0].id,
           category: category.slice(0, -1),
-          fromIndex: 0,
+          fromIndex: currentPage === 1 ? 0 : currentPage,
         })
       );
     }
-  }, [category]);
+  }, [category, currentPage]);
+  useEffect(() => {
+    setCurrentPage(pageNumber);
+  }, [pageNumber]);
   return (
     <>
       <div
@@ -50,7 +75,11 @@ export const RecipeCategory = () => {
           marginBottom: '40px',
         })}
       >
-        <div>
+        <div
+          className={css({
+            marginBottom: '40px',
+          })}
+        >
           <h2>{t(category.charAt(0).toUpperCase() + category.slice(1))}</h2>
           <FlexGrid
             flexGridColumnCount={4}
@@ -98,6 +127,29 @@ export const RecipeCategory = () => {
               ))}
           </FlexGrid>
         </div>
+
+        <Pagination
+          numPages={Math.ceil(filteredCount / numberOfResultsPerPage)}
+          currentPage={currentPage}
+          overrides={{
+            Root: {
+              style: {
+                justifyContent: 'center',
+              },
+            },
+          }}
+          onPageChange={({ nextPage }) => {
+            const newPage = Math.min(Math.max(nextPage, 1), 20);
+            setCurrentPage(newPage);
+            const newParams = new URLSearchParams({
+              page: newPage.toString(),
+            });
+            history.replace({
+              pathname: location.pathname,
+              search: newParams.toString(),
+            });
+          }}
+        />
       </div>
     </>
   );

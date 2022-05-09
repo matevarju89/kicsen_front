@@ -28,8 +28,20 @@ class RecipeDataService {
     );
   }
 
+  getRecipeCountOfCategory(category: string, family: string) {
+    return http.get<Number>(
+      `/families/${family}/countRecipes?where[category1]equals=${category}`
+    );
+  }
+
   get(id: string) {
     return http.get<RecipeData>(`/recipes/${id}`);
+  }
+
+  count(property: string, value: string, family: string, operator = 'equals') {
+    return http.get<Number>(
+      `/recipes/count?where[${property}][${operator}]=${value}`
+    );
   }
 
   create(data: RecipePayloadData) {
