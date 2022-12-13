@@ -44,8 +44,8 @@ export const filtersObjDefaults: IFilterContext = {
 };
 export const FilterContext = createContext(filtersObjDefaults);
 
-export const RecipeCategory = (props: any) => {
-  const { category } = useParams<{ category: string }>();
+export const RecipeAll = () => {
+  //const { category } = useParams<{ category: string }>();
   const [filters, setFilters] = useState([]);
   const dispatch = useAppDispatch();
   const [css, theme] = useStyletron();
@@ -55,15 +55,18 @@ export const RecipeCategory = (props: any) => {
   const { recipeList, filteredCount } = useAppSelector(recipeSelector);
   const history = useHistory();
   const location = useLocation();
+  //let query = useQuery();
   const queryParams = qs.parse(location.search);
   let pageNumber: number = queryParams.page ? Number(queryParams.page) : 1;
+  const category1: string | null | (string | null)[] = queryParams.category1;
   const category2: string | null | (string | null)[] = queryParams.category2;
   const category3: string | null | (string | null)[] = queryParams.category3;
   const difficulty: string | null | (string | null)[] = queryParams.difficulty;
   const keyword: string | null | (string | null)[] = queryParams.keyword;
-  const category1FilterPortion: {} = {
-    equals: category.slice(0, -1),
-  };
+  const category1FilterPortion: {} =
+    typeof category1 === 'string'
+      ? { in: category1.split('+') }
+      : { in: ['appetizer', 'soup', 'main', 'dessert'] };
   const category2FilterPortion: {} =
     typeof category2 === 'string'
       ? { in: category2.split('+') }
@@ -104,31 +107,34 @@ export const RecipeCategory = (props: any) => {
   const contextValue = { filtersObj, setFiltersObj };
   useEffect(() => {
     if (families) {
-      setFiltersObj({
-        ...filtersObj,
-        category1: {
-          equals: category.slice(0, -1),
-        },
-      });
-    }
-  }, [category]);
-  useEffect(() => {
-    if (families) {
       dispatch(
         getCountOfCategory({
           family: families[0].id,
-          category: category.slice(0, -1),
+          category: queryParams.category1,
         })
       );
     }
-  }, [dispatch, filtersObj, families]);
+  }, [category1]);
   useEffect(() => {
     if (families) {
+      /*dispatch(
+        loadCategoryPaginated({
+          family: families[0].id,
+          category: category.slice(0, -1),
+          fromIndex: currentPage === 1 ? 0 : currentPage,
+        })
+      );*/
       dispatch(
         loadWithFiltersPaginated({
           family: families[0].id,
           fromIndex: currentPage === 1 ? 0 : currentPage,
           /*filterObject: {
+            category1: {
+              equals: category.slice(0, -1),
+            },
+            difficulty: {
+              in: ['easy', 'hard', 'medium'],
+            },
             OR: [
               {
                 ingredients: {
@@ -148,7 +154,7 @@ export const RecipeCategory = (props: any) => {
         })
       );
     }
-  }, [dispatch, families, currentPage, filtersObj]);
+  }, [category1, currentPage, filtersObj]);
   useEffect(() => {
     setCurrentPage(pageNumber);
   }, [pageNumber]);
@@ -159,15 +165,13 @@ export const RecipeCategory = (props: any) => {
           marginBottom: '40px',
         })}
       >
-        <RecipeFilters isCategoryGiven={true} />
+        <RecipeFilters isCategoryGiven={false} />
         <div
           className={css({
             marginBottom: '40px',
           })}
         >
-          <h2>
-            {t(`${category.charAt(0).toUpperCase() + category.slice(1)}`)}
-          </h2>
+          <h2>{t('Here is the choice')}</h2>
           <FlexGrid
             flexGridColumnCount={4}
             flexGridColumnGap='scale800'

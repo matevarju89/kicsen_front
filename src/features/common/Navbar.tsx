@@ -41,8 +41,13 @@ const NavBar = () => {
       return [
         {
           /*icon: ChevronRight,*/
-          label: t('Recipes'),
+          label: t('Home'),
           info: { linkTo: '/recipes' },
+        },
+        {
+          /*icon: ChevronRight,*/
+          label: t('Recipes'),
+          info: { linkTo: '/recipes/all' },
         },
         {
           //icon: ChevronRight,
@@ -52,22 +57,22 @@ const NavBar = () => {
             {
               //icon: ChevronRight,
               label: t('Appetizer'),
-              info: { linkTo: '/recipes/appetizers?page=1' },
+              info: { linkTo: '/recipes/appetizers' },
             },
             {
               //icon: ChevronRight,
               label: t('Soup'),
-              info: { linkTo: '/recipes/soups?page=1' },
+              info: { linkTo: '/recipes/soups' },
             },
             {
               //icon: ChevronRight,
               label: t('Main'),
-              info: { linkTo: '/recipes/mains?page=1' },
+              info: { linkTo: '/recipes/mains' },
             },
             {
               //icon: ChevronRight,
               label: t('Dessert'),
-              info: { linkTo: '/recipes/desserts?page=1' },
+              info: { linkTo: '/recipes/desserts' },
             },
           ],
         },

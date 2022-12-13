@@ -2,8 +2,11 @@
 import http from '../../utility/http-common';
 import { RecipeData } from './types';
 import { RecipePayloadData } from './recipeAdd';
+import qs from 'qs';
+import QueryString from 'qs';
 
 export const recipeCategories = ['appetizer', 'soup', 'main', 'dessert'];
+
 class RecipeDataService {
   getAll() {
     return http.get<Array<RecipeData>>('/recipes');
@@ -11,7 +14,7 @@ class RecipeDataService {
 
   getfirstRecipesOfCategory(howMany: number, category: string, family: string) {
     return http.get<Array<RecipeData>>(
-      `/families/${family}/recipes?where[category1]equals=${category}&take=${howMany}`
+      `/families/${family}/recipes?where[category1]=${category}&take=${howMany}`
     );
   }
 
@@ -24,7 +27,25 @@ class RecipeDataService {
     operator = 'equals'
   ) {
     return http.get<RecipeData>(
-      `/families/${family}/recipes?where[${property}][${operator}]=${value}&take=${howMany}&skip=${fromIndex}`
+      `/families/${family}/recipes?where[${property}]=${value}&take=${howMany}&skip=${fromIndex}`
+    );
+  }
+
+  getByMultiplePropertyValuesPaginated(
+    filterObject: any,
+    howMany: number,
+    fromIndex: number,
+    family: string
+  ) {
+    const queryObj = {
+      where: filterObject,
+      take: howMany,
+      skip: fromIndex,
+    };
+    const stringFilterObj = qs.stringify(queryObj);
+
+    return http.get<RecipeData>(
+      `/families/${family}/recipes?${stringFilterObj}`
     );
   }
 
