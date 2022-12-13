@@ -1,6 +1,7 @@
 {
   "hu": {
     "translation": {
+      "Home": "Főoldal",
       "Appetizer": "Előétel",
       "Soup": "Leves",
       "Main": "Főétel",
@@ -9,6 +10,7 @@
       "Soups": "Levesek",
       "Mains": "Főételek",
       "Desserts": "Desszertek",
+      "All recipes": "Az összes recept",
       "Sweet": "Édes",
       "Salty": "Sós",
       "Vegan": "Vegán",
@@ -72,7 +74,10 @@
       "Discover the depht of your family's cookbook!": "Fedezd fel a családod receptgyűjteményét!",
       "Edit recipe": "Recept szerkesztése",
       "Recipe uplad error": "Recept feltöltési hiba",
-      "Error: Family is not detectable": "Hiba: a családod nem található"
+      "Error: Family is not detectable": "Hiba: a családod nem található",
+      "Keyword": "Kulcsszó",
+      "Add a word": "Adj egy szót",
+      "Here is the choice": "Itt a kínálat"
     }
   }
 }

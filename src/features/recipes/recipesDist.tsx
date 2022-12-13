@@ -4,6 +4,7 @@ import { useStyletron } from 'baseui';
 import { useTranslation } from 'react-i18next';
 import { RecipesMain } from './recipesMain';
 import { RecipeCategory } from './recipeCategory';
+import { RecipeAll } from './recipeAll';
 import { RecipeDetail } from './recipeDetail';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { loadUserBase, loadUserFamily, userSelector } from '../user/userSlice';
@@ -22,7 +23,7 @@ export const RecipesDist = () => {
   const { families, id } = useAppSelector(userSelector);
   useEffect(() => {
     dispatch(loadUserBase(username));
-  }, []);
+  }, [username]);
   return (
     <>
       {families?.length ? (
@@ -70,12 +71,13 @@ export const RecipesDist = () => {
               <RecipesMain />
             </Route>
             <Route exact path={`${path}/new`} children={<RecipeAdd />} />
-
+            <Route exact path={`${path}/all`} children={<RecipeAll />} />
             <Route
               exact
               path={`${path}/:category`}
               children={<RecipeCategory />}
             />
+
             <Route path={`${path}/detail/:id`} children={<RecipeDetail />} />
             <Route path={`${path}/edit/:id`}>
               <RecipeEdit />

@@ -82,7 +82,7 @@ export const loadFirstRecipesOfCategories = createAsyncThunk(
   }
 );
 
-export const numberOfResultsPerPage = 2;
+export const numberOfResultsPerPage = 10;
 
 export const loadCategoryPaginated = createAsyncThunk(
   'recipes/getcategory',
@@ -95,6 +95,22 @@ export const loadCategoryPaginated = createAsyncThunk(
       arg.family
     )) as any;
     if (response.status === 200) {
+      return response.data as RecipeData[];
+    }
+  }
+);
+
+export const loadWithFiltersPaginated = createAsyncThunk(
+  'recipes/getRecipesWithFilters',
+  async (arg: any) => {
+    const response = (await recipeAPI.getByMultiplePropertyValuesPaginated(
+      arg.filterObject,
+      numberOfResultsPerPage,
+      arg.fromIndex,
+      arg.family
+    )) as any;
+    if (response.status === 200) {
+      console.log(response.data);
       return response.data as RecipeData[];
     }
   }
@@ -176,6 +192,25 @@ export const recipeSlice = createSlice({
         state.recipesLoading = false;
         state.count = payload ? payload.length : 0;
         state.recipesError = '';
+        return state;
+      })
+      .addCase(loadWithFiltersPaginated.fulfilled, (state, { payload }) => {
+        state.recipeList = [...(payload as RecipeData[])];
+        state.recipesLoading = false;
+        state.count = payload ? payload.length : 0;
+        state.recipesError = '';
+        return state;
+      })
+      .addCase(loadWithFiltersPaginated.rejected, (state, action) => {
+        state.recipesError = 'Failed loading the recipes';
+        state.recipeList = [];
+        state.recipesLoading = false;
+        return state;
+      })
+      .addCase(loadWithFiltersPaginated.pending, (state, action) => {
+        state.recipesLoading = true;
+        state.recipesError = '';
+        state.recipeList = [];
         return state;
       })
       .addCase(loadCategoryPaginated.rejected, (state, action) => {
