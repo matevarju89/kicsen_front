@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { useContext } from 'react';
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { useStyletron } from 'baseui';
 import { useTranslation } from 'react-i18next';
 import { RecipesMain } from './recipesMain';
@@ -7,61 +7,82 @@ import { RecipeCategory } from './recipeCategory';
 import { RecipeAll } from './recipeAll';
 import { RecipeDetail } from './recipeDetail';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { loadUserBase, loadUserFamily, userSelector } from '../user/userSlice';
+import { loadUserBase, userSelector } from '../user/userSlice';
 import { authSelector } from '../auth/authSlice';
 import { Avatar } from 'baseui/avatar';
 import { Spinner } from 'baseui/spinner';
 import RecipeAdd from './recipeAdd';
 import RecipeEdit from './recipeEdit';
+import Cookies from 'universal-cookie';
+import { CurrentFamilyContext } from '../common/Layout';
 
 export const RecipesDist = () => {
   const dispatch = useAppDispatch();
   const [css, theme] = useStyletron();
   const { t } = useTranslation();
   const { path } = useRouteMatch();
-  const { username } = useAppSelector(authSelector);
-  const { families, id } = useAppSelector(userSelector);
-  useEffect(() => {
+  const history = useHistory();
+
+  const { currentFamily } = useContext(CurrentFamilyContext);
+  //const { username } = useAppSelector(authSelector);
+  const { families, username } = useAppSelector(userSelector);
+  /*useEffect(() => {
     dispatch(loadUserBase(username));
-  }, [username]);
+  }, [username]);*/
   return (
     <>
       {families?.length ? (
         <>
           <div
             className={css({
-              width: '300px',
+              width: '305px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flexStart',
-              marginBottom: '50px',
+              marginBottom: '30px',
+              [theme.mediaQuery.medium]: {
+                width: '340px',
+                marginBottom: '50px',
+              },
             })}
           >
-            <Avatar
-              name={username}
-              size='scale1600'
-              src=''
-              overrides={{
-                Root: {
-                  style: { marginRight: '20px' },
-                },
+            <div
+              onClick={() => {
+                history.push('/user');
               }}
-            />
+            >
+              <Avatar
+                name={username}
+                size='scale1600'
+                src=''
+                overrides={{
+                  Root: {
+                    style: { marginRight: '20px' },
+                  },
+                }}
+              />
+            </div>
             <div>
               <h3
                 className={css({
-                  margin: '0px 0px 10px 0px',
+                  margin: '0px 0px 5px 0px',
                 })}
               >
                 {username}
               </h3>
               <p
                 className={css({
-                  margin: 0,
+                  margin: '0px 0px 10px 0px',
+                  fontSize: '0.9rem',
+                  [theme.mediaQuery.medium]: {
+                    fontSize: '1rem',
+                  },
                 })}
               >
-                {families?.length
-                  ? `${t('Your Family')}: ${families[0].description}`
+                {currentFamily
+                  ? `${t('Currently viewed family')}: ${
+                      currentFamily.description
+                    }`
                   : t('You are not part of a family')}
               </p>
             </div>

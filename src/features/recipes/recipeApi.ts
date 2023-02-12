@@ -3,7 +3,6 @@ import http from '../../utility/http-common';
 import { RecipeData } from './types';
 import { RecipePayloadData } from './recipeAdd';
 import qs from 'qs';
-import QueryString from 'qs';
 
 export const recipeCategories = ['appetizer', 'soup', 'main', 'dessert'];
 
@@ -49,9 +48,17 @@ class RecipeDataService {
     );
   }
 
-  getRecipeCountOfCategory(category: string, family: string) {
+  getRecipeCountOfCategory(
+    filterObject: any,
+    category: string,
+    family: string
+  ) {
+    const queryObj = {
+      where: filterObject,
+    };
+    const stringFilterObj = qs.stringify(queryObj);
     return http.get<Number>(
-      `/families/${family}/countRecipes?where[category1]equals=${category}`
+      `/families/${family}/countRecipes?${stringFilterObj}`
     );
   }
 

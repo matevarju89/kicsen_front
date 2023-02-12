@@ -3,11 +3,14 @@ import { RootState } from '../../app/store';
 import { RecipeData } from './types';
 import recipeAPI, { recipeCategories } from './recipeApi';
 import { RecipePayloadData } from './recipeAdd';
+import { SmartTagData } from '../smartTag/types';
+import { RecipesDist } from './recipesDist';
 
 interface IRecipeListState {
   count: number;
   filteredCount: number;
   recipeList: Array<RecipeData>;
+  current_smarttag_list: Array<SmartTagData>;
   recipeDetail: RecipeData | null;
   recipesLoading: boolean;
   recipesError: string;
@@ -19,6 +22,7 @@ const initialState: IRecipeListState = {
   count: 0,
   filteredCount: 0,
   recipeList: [],
+  current_smarttag_list: [],
   recipesLoading: false,
   recipeDetail: null,
   recipeDetailLoading: false,
@@ -69,7 +73,7 @@ export const loadFirstRecipesOfCategories = createAsyncThunk(
     let results: any = [];
     const promises = recipeCategories.map(async (category) => {
       const response = (await recipeAPI.getfirstRecipesOfCategory(
-        6,
+        8,
         category,
         family
       )) as any;
@@ -82,7 +86,7 @@ export const loadFirstRecipesOfCategories = createAsyncThunk(
   }
 );
 
-export const numberOfResultsPerPage = 10;
+export const numberOfResultsPerPage = 12;
 
 export const loadCategoryPaginated = createAsyncThunk(
   'recipes/getcategory',
@@ -110,7 +114,7 @@ export const loadWithFiltersPaginated = createAsyncThunk(
       arg.family
     )) as any;
     if (response.status === 200) {
-      console.log(response.data);
+      //console.log(response.data);
       return response.data as RecipeData[];
     }
   }
@@ -120,6 +124,7 @@ export const getCountOfCategory = createAsyncThunk(
   'recipes/getCountOfCategory',
   async (arg: any) => {
     const response = await recipeAPI.getRecipeCountOfCategory(
+      arg.filterObject,
       arg.category,
       arg.family
     );
@@ -137,10 +142,12 @@ export const recipeSlice = createSlice({
       state.recipeList = [];
       state.recipeDetail = null;
       state.recipeDetailError = '';
+      state.current_smarttag_list = [];
       return state;
     },
     clearRecipeState: (state) => {
       state.recipeList = [];
+      state.current_smarttag_list = [];
       state.recipeDetail = null;
       state.recipeDetailError = '';
       state.count = 0;
@@ -196,6 +203,23 @@ export const recipeSlice = createSlice({
       })
       .addCase(loadWithFiltersPaginated.fulfilled, (state, { payload }) => {
         state.recipeList = [...(payload as RecipeData[])];
+        let smartTagArray: Array<SmartTagData> = [];
+
+        [...(payload as RecipeData[])]
+          .filter((recipe) => typeof recipe.smartTags !== 'undefined')
+          .map((recipe) => {
+            return recipe.smartTags;
+          })
+          .forEach((smartTags) => {
+            if (Array.isArray(smartTags)) {
+              smartTagArray.push(...smartTags);
+            }
+          });
+        state.current_smarttag_list = smartTagArray.filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex((t) => t.id === value.id && t.name === value.name)
+        );
         state.recipesLoading = false;
         state.count = payload ? payload.length : 0;
         state.recipesError = '';

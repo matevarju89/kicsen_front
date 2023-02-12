@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as yup from 'yup';
 import { useHistory } from 'react-router-dom';
 import { Formik, FormikProps, Form } from 'formik';
@@ -25,11 +25,12 @@ const Login = () => {
   const [css] = useStyletron();
   const { isSuccess, isError, errorMessage, isAuthenticated } =
     useAppSelector(authSelector);
+
   useEffect(() => {
     return () => {
       dispatch(clearState());
     };
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     if (isError) {
       toast.error(t(errorMessage));
@@ -37,11 +38,13 @@ const Login = () => {
     }
     if (isSuccess) {
       dispatch(clearState());
-      history.push('/recipes');
+      //history.push('/recipes');
+      //window.location.pathname = '/recipes';
     }
-  }, [isError, isSuccess]);
+  }, [isError, isSuccess, dispatch, t, history]);
   if (isAuthenticated) {
-    return <Redirect to='/recipes' />;
+    window.location.pathname = '/recipes';
+    //return <Redirect to='/recipes' />;
   }
   return (
     <div

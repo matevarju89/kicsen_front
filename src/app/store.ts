@@ -14,12 +14,14 @@ import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/user/userSlice';
 import recipesReducer from '../features/recipes/recipeSlice';
 import searchReducer from '../features/search/searchSlice';
+import smartTagReducer from '../features/smartTag/smartTagSlice';
 
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
   recipes: recipesReducer,
   search: searchReducer,
+  smartTags: smartTagReducer,
 });
 const persistConfig = {
   key: 'root',

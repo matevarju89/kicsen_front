@@ -6,10 +6,9 @@ import { Select, Value } from 'baseui/select';
 const SelectInput = (props: any) => {
   const [css] = useStyletron();
   const [inputValue, setInputValue] = useState<Value>([]);
-  const [field, meta, helpers] = useField(props);
-
+  const [, meta, helpers] = useField(props);
+  const { initialValue, multi, options, name } = props;
   useEffect(() => {
-    const { initialValue, multi, options, name } = props;
     if (initialValue) {
       if (!multi) {
         const initialSelection = options.filter((option: any) => {
@@ -26,13 +25,27 @@ const SelectInput = (props: any) => {
       }
     }
   }, []);
+  useEffect(() => {
+    if (initialValue) {
+      if (multi) {
+        const initialSelection = initialValue.map((val: any) => {
+          return options.filter((option: any) => {
+            return option[name] === val;
+          })[0];
+        });
+        initialSelection[0] && setInputValue(initialSelection);
+      }
+    }
+  }, [options]);
   return (
     <>
       <Select
         overrides={{ Root: { style: { marginTop: '20px' } } }}
         options={props.options}
+        creatable={props.creatable ? true : false}
         placeholder={props.placeholder}
         valueKey={props.valueKey}
+        maxDropdownHeight={props.maxDropdownHeight}
         multi={props.multi}
         onChange={(params) => {
           setInputValue(params.value);

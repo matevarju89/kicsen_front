@@ -3,26 +3,11 @@ import { useStyletron, styled } from 'baseui';
 import { useAppDispatch } from '../../app/hooks';
 import { logoutUser } from '../auth/authSlice';
 import { AppNavBar, setItemActive, NavItemT } from 'baseui/app-nav-bar';
-import { ChevronDown, ChevronRight, Delete, Overflow } from 'baseui/icon';
+import { ChevronRight, Delete, Overflow } from 'baseui/icon';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { authSelector } from '../auth/authSlice';
-
-const StyledNavLink = styled(Link, (props) => ({
-  textDecoration: 'none',
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  color: '#6b6b6b',
-  paddingTop: '20px',
-  paddingBottom: '20px',
-  ':hover': {
-    color: '#000',
-  },
-}));
 
 const NavBar = () => {
   const { username, isAuthenticated } = useAppSelector(authSelector);
@@ -30,12 +15,6 @@ const NavBar = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const [css] = useStyletron();
-  const handleMainItemSelect = (item: NavItemT) => {
-    setMainItems((prev) => setItemActive(prev, item));
-    if (item?.info?.linkTo) {
-      history.push(item.info.linkTo);
-    }
-  };
   const currentMenuItems: NavItemT[] = useMemo(() => {
     if (isAuthenticated) {
       return [
@@ -88,6 +67,7 @@ const NavBar = () => {
       ];
     }
   }, [isAuthenticated, t]);
+
   const currentUserItems: NavItemT[] = useMemo(() => {
     if (isAuthenticated) {
       return [
@@ -103,12 +83,20 @@ const NavBar = () => {
     }
   }, [isAuthenticated, t]);
 
+  const [mainItems, setMainItems] =
+    React.useState<NavItemT[]>(currentMenuItems);
+
+  const handleMainItemSelect = (item: NavItemT) => {
+    setMainItems((prev) => setItemActive(prev, item));
+    if (item?.info?.linkTo) {
+      history.push(item.info.linkTo);
+    }
+  };
+
   useEffect(() => {
     setMainItems(currentMenuItems);
   }, [isAuthenticated]);
 
-  const [mainItems, setMainItems] =
-    React.useState<NavItemT[]>(currentMenuItems);
   return (
     <>
       <AppNavBar
@@ -119,7 +107,7 @@ const NavBar = () => {
               color: '#000',
               fontFamily: 'cursive',
             })}
-            href='/'
+            href='/recipes'
           >
             Kicsen App
           </a>
