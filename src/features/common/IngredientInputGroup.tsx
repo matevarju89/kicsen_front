@@ -10,11 +10,10 @@ import { useTranslation } from 'react-i18next';
 const IngredientInputGroup = (props: any) => {
   const [css] = useStyletron();
   const [t] = useTranslation();
-  const [listValue, setListValue] = useState('');
   const [ingredientList, setIngredientList] = useState('');
   const [ingredientValue, setIngredientValue] = useState('');
   const [quantityValue, setQuantityValue] = useState('');
-  const [field, meta, helpers] = useField(props);
+  const [, meta, helpers] = useField(props);
   const ingredientInputRef = useRef<HTMLInputElement>(null);
 
   const updateIngredientList = () => {

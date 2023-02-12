@@ -1,13 +1,53 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStyletron } from 'baseui';
-import { FormControl } from 'baseui/form-control';
+import { useHistory } from 'react-router-dom';
+import qs from 'query-string';
 import { Input } from 'baseui/input';
+import { Block } from 'baseui/block';
+import { Button, SIZE, SHAPE, KIND } from 'baseui/button';
 import { useTranslation } from 'react-i18next';
+import { smartTagSelector } from '../smartTag/smartTagSlice';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import {
+  loadAllSmartTagsByLang,
+  clearSmartTagListState,
+} from '../smartTag/smartTagSlice';
+import { BlockProps } from 'baseui/block';
+import { userSelector } from '../user/userSlice';
+
+const searchBarProps: BlockProps = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: '20px',
+};
 
 const SearchBox = (props: any) => {
-  const [css] = useStyletron();
+  const [css, theme] = useStyletron();
   const [value, setValue] = React.useState('');
+  const [smartTagsExpanded, setSmartTagsExpanded] = React.useState(false);
   const [t] = useTranslation();
+  const history = useHistory();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { smartTagList } = useAppSelector(smartTagSelector);
+
+  const { lang } = useAppSelector(userSelector);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(loadAllSmartTagsByLang(lang));
+    return () => {
+      dispatch(clearSmartTagListState());
+    };
+  }, []);
+  const submit = () => {
+    const newQueryFragment = qs.stringify({
+      keyword:
+        typeof inputRef?.current?.value === 'string'
+          ? inputRef.current.value.toLowerCase()
+          : '',
+    });
+    history.push(`/recipes/all?${newQueryFragment}`);
+  };
   return (
     <div
       className={css({
@@ -22,23 +62,39 @@ const SearchBox = (props: any) => {
         padding: '20px',
       })}
     >
-      <h2>{t("Discover the depht of your family's cookbook!")}</h2>
-      <FormControl
-        overrides={{
-          ControlContainer: {
-            style: {
-              maxWidth: '500px',
-              margin: 'auto',
-            },
-          },
-        }}
+      <h2 className={css({ textAlign: 'center' })}>
+        {t("Discover the depht of your family's cookbook!")}
+      </h2>
+      <div
+        className={css({
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '20px',
+          flexWrap: 'wrap',
+          width: '100%',
+        })}
       >
         <Input
           value={value}
+          inputRef={inputRef}
           onChange={(e) => setValue(e.currentTarget.value)}
           placeholder={t('Search for a recipe name or ingredient')}
           clearOnEscape
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              submit();
+            }
+          }}
           overrides={{
+            Root: {
+              style: {
+                width: '100%',
+                maxWidth: '300px',
+                marginBottom: '10px',
+              },
+            },
             Input: {
               style: {
                 backgroundColor: '#fff',
@@ -46,7 +102,163 @@ const SearchBox = (props: any) => {
             },
           }}
         ></Input>
-      </FormControl>
+        <div className={css({ padding: '0 10px' })}>
+          <Button
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  marginBottom: '10px',
+                }),
+              },
+            }}
+            onClick={() => {
+              submit();
+            }}
+          >
+            {t('Search')}
+          </Button>
+        </div>
+      </div>
+      <p
+        className={css({
+          color: 'mono700',
+          marginBottom: '15px',
+          textAlign: 'center',
+          marginTop: '0',
+        })}
+      >
+        {t('Or use a smart tag to find what your are looking for')}
+      </p>
+      <div
+        className={css({
+          textAlign: 'center',
+        })}
+      >
+        {smartTagList.slice(0, 10).map((smartTag) => {
+          return (
+            <Button
+              onClick={() => {
+                const newQueryFragment = qs.stringify({
+                  smarttag:
+                    typeof smartTag.name === 'string'
+                      ? smartTag.name.toLowerCase()
+                      : '',
+                });
+                history.push(`/recipes/all?${newQueryFragment}`);
+              }}
+              key={smartTag.name}
+              size={SIZE.compact}
+              shape={SHAPE.pill}
+              overrides={{
+                Root: {
+                  style: ({ $theme }) => ({
+                    marginRight: '10px',
+                    marginBottom: '5px',
+                    fontSize: '12px',
+                    lineHeight: '14px',
+                    [$theme.mediaQuery.medium]: {
+                      fontSize: '14px',
+                      lineHeight: '16px',
+                      marginBottom: '10px',
+                    },
+                  }),
+                },
+              }}
+            >
+              {smartTag.name}
+            </Button>
+          );
+        })}
+        {smartTagList.length > 7 && !smartTagsExpanded && (
+          <Button
+            kind={KIND.tertiary}
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  marginRight: '10px',
+                  marginBottom: '5px',
+                  backgroundColor: 'transparent',
+                  fontSize: '12px',
+                  lineHeight: '14px',
+                  [$theme.mediaQuery.medium]: {
+                    fontSize: '14px',
+                    lineHeight: '16px',
+                    marginBottom: '10px',
+                  },
+                }),
+              },
+            }}
+            onClick={() => {
+              setSmartTagsExpanded(true);
+            }}
+          >
+            {t('Show all...')}
+          </Button>
+        )}
+        {smartTagList.length > 7 &&
+          smartTagsExpanded &&
+          smartTagList.slice(7).map((smartTag) => {
+            return (
+              <Button
+                onClick={() => {
+                  const newQueryFragment = qs.stringify({
+                    smarttag:
+                      typeof smartTag.name === 'string'
+                        ? smartTag.name.toLowerCase()
+                        : '',
+                  });
+                  history.push(`/recipes/all?${newQueryFragment}`);
+                }}
+                key={smartTag.name}
+                size={SIZE.compact}
+                shape={SHAPE.pill}
+                overrides={{
+                  Root: {
+                    style: ({ $theme }) => ({
+                      marginRight: '10px',
+                      marginBottom: '5px',
+                      fontSize: '12px',
+                      lineHeight: '14px',
+                      [$theme.mediaQuery.medium]: {
+                        fontSize: '14px',
+                        lineHeight: '16px',
+                        marginBottom: '10px',
+                      },
+                    }),
+                  },
+                }}
+              >
+                {smartTag.name}
+              </Button>
+            );
+          })}
+        {smartTagList.length > 7 && smartTagsExpanded && (
+          <Button
+            kind={KIND.tertiary}
+            overrides={{
+              BaseButton: {
+                style: ({ $theme }) => ({
+                  marginRight: '10px',
+                  marginBottom: '5px',
+                  backgroundColor: 'transparent',
+                  fontSize: '12px',
+                  lineHeight: '14px',
+                  [$theme.mediaQuery.medium]: {
+                    fontSize: '14px',
+                    lineHeight: '16px',
+                    marginBottom: '10px',
+                  },
+                }),
+              },
+            }}
+            onClick={() => {
+              setSmartTagsExpanded(false);
+            }}
+          >
+            {t('...Show less')}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { UserData } from '../user/types';
+import { SmartTagData } from '../smartTag/types';
 
 export type RecipeImage = {
   createdAt: Date;
@@ -23,6 +24,7 @@ export type RecipeData = {
   id: string;
   images?: Array<RecipeImage>;
   ingredients: string;
+  smartTags?: Array<SmartTagData>;
   likedBy?: Array<UserData>;
   postedBy?: UserData | null;
   ratings?: Array<RatingData>;

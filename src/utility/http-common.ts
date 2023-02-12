@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { store } from '../app/store';
-import { LOGOUT } from '../constants/storeConstants';
 const api = axios.create({
   baseURL: 'http://localhost:3000/api',
   headers: {

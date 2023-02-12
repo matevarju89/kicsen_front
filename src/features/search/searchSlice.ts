@@ -1,7 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { RecipeData } from '../recipes/types';
-import searchAPI from './searchApi';
 
 interface ISearchListState {
   count: number;

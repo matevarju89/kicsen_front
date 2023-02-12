@@ -13,7 +13,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { Skeleton } from 'baseui/skeleton';
 
 const CategoryTag = ({ children }: { children: React.ReactNode }) => {
-  const [css] = useStyletron();
+  const [css, theme] = useStyletron();
   return (
     <span
       className={css({
@@ -21,6 +21,11 @@ const CategoryTag = ({ children }: { children: React.ReactNode }) => {
         border: '1px solid #000',
         borderRadius: '20px',
         marginRight: '15px',
+        marginBottom: '10px',
+        fontSize: '0.8rem',
+        [theme.mediaQuery.medium]: {
+          fontSize: '1rem',
+        },
       })}
     >
       {children}
@@ -35,7 +40,7 @@ export const RecipeDetail = () => {
   const { recipeDetail, recipeDetailError, recipeDetailLoading } =
     useAppSelector(recipeSelector);
   const [t] = useTranslation();
-  const [css] = useStyletron();
+  const [css, theme] = useStyletron();
   const [imageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
     dispatch(loadRecipe(id));
@@ -54,7 +59,7 @@ export const RecipeDetail = () => {
       )}
       {recipeDetailLoading && (
         <>
-          <Skeleton width='500px' height='500px' animation />
+          <Skeleton width='500px' height='375px' animation />
           <Skeleton
             rows={3}
             width='200px'
@@ -72,17 +77,44 @@ export const RecipeDetail = () => {
       )}
       {recipeDetail && (
         <>
-          {!imageLoaded && <Skeleton width='500px' height='500px' animation />}
+          {!imageLoaded && (
+            <Skeleton
+              width='100%'
+              height='375px'
+              animation
+              overrides={{
+                Root: {
+                  style: {
+                    marginBottom: '10px',
+                    [theme.mediaQuery.medium]: {
+                      width: '500px',
+                    },
+                  },
+                },
+              }}
+            />
+          )}
           <img
-            width={'500px'}
+            width={'100%'}
             alt='food'
             onLoad={() => {
               setImageLoaded(true);
             }}
+            className={css({
+              [theme.mediaQuery.medium]: {
+                width: '500px',
+              },
+            })}
             style={imageLoaded ? { marginBottom: '10px' } : { display: 'none' }}
-            src='/food_placeholder.png'
+            src={
+              recipeDetail.images &&
+              recipeDetail.images.length &&
+              recipeDetail.images[0].url
+                ? recipeDetail.images[0].url
+                : '/food_placeholder.png'
+            }
           />
-          <Block display='flex' marginBottom='40px'>
+          <Block display='flex' marginBottom='30px' flexWrap={true}>
             <CategoryTag>
               {recipeDetail.category1 && t(recipeDetail.category1)}
             </CategoryTag>
@@ -92,9 +124,9 @@ export const RecipeDetail = () => {
             <CategoryTag>
               {recipeDetail.category3 && t(recipeDetail.category3)}
             </CategoryTag>
-            {recipeDetail.category4 &&
-              recipeDetail.category4.map((category) => {
-                return <CategoryTag key={category}>{category}</CategoryTag>;
+            {recipeDetail.smartTags &&
+              recipeDetail.smartTags.map((tag) => {
+                return <CategoryTag key={tag.name}>{tag.name}</CategoryTag>;
               })}
           </Block>
           <h2
@@ -152,7 +184,19 @@ export const RecipeDetail = () => {
               );
             })}
           </Block>
-          <p>{recipeDetail.description}</p>
+          <Block marginBottom={'5px'}>
+            <span
+              className={css({
+                fontWeight: 'bold',
+              })}
+            >
+              {t('Preparation')}
+            </span>
+          </Block>
+          <div
+            className='quill-desc'
+            dangerouslySetInnerHTML={{ __html: recipeDetail.description }}
+          />
         </>
       )}
     </div>

@@ -1,12 +1,11 @@
-import react, { Suspense, useEffect } from 'react';
+import react, { Suspense } from 'react';
 import Layout from './features/common/Layout';
 import Login from './features/auth/Login';
 import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
-import { StyledSpinnerNext } from 'baseui/spinner';
+import { Spinner } from 'baseui/spinner';
 import ProtectedRoute from './features/common/ProtectedRoute';
 import Navbar from './features/common/Navbar';
 import { RecipesDist } from './features/recipes/recipesDist';
-import { getUser } from './utility/setUser';
 import ScrollToTop from './features/common/ScrollToTop';
 
 const User = react.lazy(() => import('./features/user/user'));
@@ -30,7 +29,7 @@ function App() {
             render={() => (
               <ProtectedRoute
                 element={
-                  <Suspense fallback={<StyledSpinnerNext color='#000' />}>
+                  <Suspense fallback={<Spinner color='#000' />}>
                     <User />
                   </Suspense>
                 }

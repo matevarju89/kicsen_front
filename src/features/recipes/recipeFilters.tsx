@@ -7,8 +7,21 @@ import { Input } from 'baseui/input';
 import { FlexGrid, FlexGridItem } from 'baseui/flex-grid';
 import { useTranslation } from 'react-i18next';
 import { BlockProps } from 'baseui/block';
+import { Button, KIND, SIZE as BUTTONSIZE } from 'baseui/button';
+import { ButtonGroup, MODE, SIZE, SHAPE } from 'baseui/button-group';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { smartTagSelector } from '../smartTag/smartTagSlice';
 import { FilterContext as Filtercontext_All } from './recipeAll';
 import { FilterContext as Filtercontext_Category } from './recipeCategory';
+import {
+  loadAllSmartTagsByLang,
+  clearSmartTagListState,
+} from '../smartTag/smartTagSlice';
+import { t } from 'i18next';
+import { useStyletron } from 'baseui';
+import { ChevronUp, ChevronDown, Icon } from 'baseui/icon';
+import { recipeSelector } from './recipeSlice';
+import { userSelector } from '../user/userSlice';
 
 const flexItemProps: BlockProps = {
   display: 'flex',
@@ -32,18 +45,12 @@ const DifficultySection = ({
   const isHardCheckedAsDefault =
     currentDifficultyFragment &&
     currentDifficultyFragment?.indexOf('hard') > -1;
-  const isSetting =
-    isHardCheckedAsDefault ||
-    isMediumCheckedAsDefault ||
-    isEasyCheckedAsDefault;
-  const [easyChecked, setEasyChecked] = React.useState(
-    isEasyCheckedAsDefault || !isSetting
-  );
+  const [easyChecked, setEasyChecked] = React.useState(isEasyCheckedAsDefault);
   const [mediumChecked, setMediumChecked] = React.useState(
-    isMediumCheckedAsDefault || !isSetting
+    isMediumCheckedAsDefault
   );
   const [difficultChecked, setDifficultChecked] = React.useState(
-    isHardCheckedAsDefault || !isSetting
+    isHardCheckedAsDefault
   );
   const { t } = useTranslation();
   const history = useHistory();
@@ -66,9 +73,7 @@ const DifficultySection = ({
     const newFilterPortion = choiceArray.length
       ? { in: choiceArray }
       : { in: ['easy', 'medium', 'hard'] };
-    const newHistoryFragment = choiceArray.length
-      ? choiceArray.join('+')
-      : 'easy+medium+hard';
+    const newHistoryFragment = choiceArray.length ? choiceArray.join('+') : '';
     const queryParams = qs.parse(location.search);
     const newQueries = { ...queryParams, difficulty: newHistoryFragment };
     history.push({ search: qs.stringify(newQueries) });
@@ -83,10 +88,10 @@ const DifficultySection = ({
         inputRef={inputRef1}
         name='easy'
         onChange={(e) => {
-          if (inputRef2?.current?.checked || inputRef3?.current?.checked) {
-            setEasyChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          //if (inputRef2?.current?.checked || inputRef3?.current?.checked) {
+          setEasyChecked(e.currentTarget.checked);
+          setNewFilterPortion();
+          //}
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -97,10 +102,10 @@ const DifficultySection = ({
         inputRef={inputRef2}
         name='medium'
         onChange={(e) => {
-          if (inputRef1?.current?.checked || inputRef3?.current?.checked) {
-            setMediumChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          //if (inputRef1?.current?.checked || inputRef3?.current?.checked) {
+          setMediumChecked(e.currentTarget.checked);
+          setNewFilterPortion();
+          //}
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -111,10 +116,10 @@ const DifficultySection = ({
         inputRef={inputRef3}
         name='hard'
         onChange={(e) => {
-          if (inputRef1?.current?.checked || inputRef2?.current?.checked) {
-            setDifficultChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          //if (inputRef1?.current?.checked || inputRef2?.current?.checked) {
+          setDifficultChecked(e.currentTarget.checked);
+          setNewFilterPortion();
+          //}
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -144,22 +149,13 @@ const Category1Section = ({
   const isDessertCheckedAsDefault =
     currentCategory1Fragment &&
     currentCategory1Fragment?.indexOf('dessert') > -1;
-  const isSetting =
-    isAppetizerCheckedAsDefault ||
-    isSoupCheckedAsDefault ||
-    isMainCheckedAsDefault ||
-    isDessertCheckedAsDefault;
   const [appetizerChecked, setAppetizerChecked] = React.useState(
-    !isSetting || isAppetizerCheckedAsDefault
+    isAppetizerCheckedAsDefault
   );
-  const [soupChecked, setSoupChecked] = React.useState(
-    !isSetting || isSoupCheckedAsDefault
-  );
-  const [mainChecked, setMainChecked] = React.useState(
-    !isSetting || isMainCheckedAsDefault
-  );
+  const [soupChecked, setSoupChecked] = React.useState(isSoupCheckedAsDefault);
+  const [mainChecked, setMainChecked] = React.useState(isMainCheckedAsDefault);
   const [dessertChecked, setDessertChecked] = React.useState(
-    !isSetting || isDessertCheckedAsDefault
+    isDessertCheckedAsDefault
   );
   const inputRef1 = React.useRef<HTMLInputElement>(null);
   const inputRef2 = React.useRef<HTMLInputElement>(null);
@@ -181,9 +177,7 @@ const Category1Section = ({
     const newFilterPortion = choiceArray.length
       ? { in: choiceArray }
       : { in: ['appetizer', 'soup', 'main', 'dessert'] };
-    const newHistoryFragment = choiceArray.length
-      ? choiceArray.join('+')
-      : 'appetizer+soup+main+dessert';
+    const newHistoryFragment = choiceArray.length ? choiceArray.join('+') : '';
     const queryParams = qs.parse(location.search);
     const newQueries = { ...queryParams, category1: newHistoryFragment };
     history.push({ search: qs.stringify(newQueries) });
@@ -197,14 +191,8 @@ const Category1Section = ({
         inputRef={inputRef1}
         name='appetizer'
         onChange={(e) => {
-          if (
-            inputRef2?.current?.checked ||
-            inputRef3?.current?.checked ||
-            inputRef4?.current?.checked
-          ) {
-            setAppetizerChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setAppetizerChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -215,14 +203,8 @@ const Category1Section = ({
         inputRef={inputRef2}
         name='soup'
         onChange={(e) => {
-          if (
-            inputRef1?.current?.checked ||
-            inputRef3?.current?.checked ||
-            inputRef4?.current?.checked
-          ) {
-            setSoupChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setSoupChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -233,14 +215,8 @@ const Category1Section = ({
         inputRef={inputRef3}
         name='main'
         onChange={(e) => {
-          if (
-            inputRef1?.current?.checked ||
-            inputRef2?.current?.checked ||
-            inputRef4?.current?.checked
-          ) {
-            setMainChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setMainChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -251,14 +227,8 @@ const Category1Section = ({
         inputRef={inputRef4}
         name='dessert'
         onChange={(e) => {
-          if (
-            inputRef1?.current?.checked ||
-            inputRef2?.current?.checked ||
-            inputRef3?.current?.checked
-          ) {
-            setDessertChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setDessertChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -281,12 +251,11 @@ const Category2Section = ({
     currentCategory2Fragment && currentCategory2Fragment?.indexOf('salty') > -1;
   const isSweetCheckedAsDefault =
     currentCategory2Fragment && currentCategory2Fragment?.indexOf('sweet') > -1;
-  const isSetting = isSaltyCheckedAsDefault || isSweetCheckedAsDefault;
   const [saltyChecked, setSaltyChecked] = React.useState(
-    !isSetting || isSaltyCheckedAsDefault
+    isSaltyCheckedAsDefault
   );
   const [sweetChecked, setSweetChecked] = React.useState(
-    !isSetting || isSweetCheckedAsDefault
+    isSweetCheckedAsDefault
   );
   const { t } = useTranslation();
   const inputRef1 = React.useRef<HTMLInputElement>(null);
@@ -307,9 +276,7 @@ const Category2Section = ({
     const newFilterPortion = choiceArray.length
       ? { in: choiceArray }
       : { in: ['salty', 'sweet'] };
-    const newHistoryFragment = choiceArray.length
-      ? choiceArray.join('+')
-      : 'salty+sweet';
+    const newHistoryFragment = choiceArray.length ? choiceArray.join('+') : '';
     const queryParams = qs.parse(location.search);
     const newQueries = { ...queryParams, category2: newHistoryFragment };
     history.push({ search: qs.stringify(newQueries) });
@@ -324,10 +291,8 @@ const Category2Section = ({
         name='salty'
         inputRef={inputRef1}
         onChange={(e) => {
-          if (inputRef2?.current?.checked) {
-            setSaltyChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setSaltyChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -338,10 +303,8 @@ const Category2Section = ({
         name='sweet'
         inputRef={inputRef2}
         onChange={(e) => {
-          if (inputRef1?.current?.checked) {
-            setSweetChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setSweetChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -366,12 +329,11 @@ const Category3Section = ({
   const isNonVeganCheckedAsDefault =
     currentCategory3Fragment &&
     currentCategory3Fragment?.indexOf('nonvegan') > -1;
-  const isSetting = isVeganCheckedAsDefault || isNonVeganCheckedAsDefault;
   const [veganChecked, setVeganChecked] = React.useState(
-    !isSetting || isVeganCheckedAsDefault
+    isVeganCheckedAsDefault
   );
   const [nonVeganChecked, setNonVeganChecked] = React.useState(
-    !isSetting || isNonVeganCheckedAsDefault
+    isNonVeganCheckedAsDefault
   );
   const { t } = useTranslation();
   const inputRef1 = React.useRef<HTMLInputElement>(null);
@@ -392,9 +354,7 @@ const Category3Section = ({
     const newFilterPortion = choiceArray.length
       ? { in: choiceArray }
       : { in: ['vegan', 'nonvegan'] };
-    const newHistoryFragment = choiceArray.length
-      ? choiceArray.join('+')
-      : 'vegan+nonvegan';
+    const newHistoryFragment = choiceArray.length ? choiceArray.join('+') : '';
     const queryParams = qs.parse(location.search);
     const newQueries = { ...queryParams, category3: newHistoryFragment };
     history.push({ search: qs.stringify(newQueries) });
@@ -409,10 +369,8 @@ const Category3Section = ({
         name='vegan'
         inputRef={inputRef1}
         onChange={(e) => {
-          if (inputRef2?.current?.checked) {
-            setVeganChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setVeganChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -423,10 +381,8 @@ const Category3Section = ({
         inputRef={inputRef2}
         name='nonvegan'
         onChange={(e) => {
-          if (inputRef1?.current?.checked) {
-            setNonVeganChecked(e.currentTarget.checked);
-            setNewFilterPortion();
-          }
+          setNonVeganChecked(e.currentTarget.checked);
+          setNewFilterPortion();
         }}
         labelPlacement={LABEL_PLACEMENT.right}
       >
@@ -439,6 +395,7 @@ const Category3Section = ({
 const KeywordSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
   const location = useLocation();
   const history = useHistory();
+  const [css, theme] = useStyletron();
   const currentQuery = qs.parse(location.search);
   const currentKeywordFragment = currentQuery.keyword;
   const defaultState =
@@ -451,6 +408,7 @@ const KeywordSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
     : Filtercontext_All;
   const { filtersObj, setFiltersObj } = React.useContext(currentContext);
   const setNewFilterPortion = () => {
+    //console.log(currentKeywordFragment);
     const currentValue = inputRef1?.current?.value;
     const newFilterPortion = currentValue
       ? [
@@ -475,7 +433,16 @@ const KeywordSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
   };
   return (
     <Block>
-      <h4>{t('Keyword')}</h4>
+      <h4
+        className={css({
+          marginTop: '10px',
+          [theme.mediaQuery.medium]: {
+            marginTop: '1.33em',
+          },
+        })}
+      >
+        {t('Keyword')}
+      </h4>
       <Input
         value={keyword}
         inputRef={inputRef1}
@@ -492,32 +459,473 @@ const KeywordSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
   );
 };
 
-const RecipeFilters = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
+const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
+  const location = useLocation();
+  const history = useHistory();
+  const currentQuery = qs.parse(location.search);
+  const currentSmartTag: string | null | (string | null)[] =
+    currentQuery.smarttag;
+  const currentContext = isCategoryGiven
+    ? Filtercontext_Category
+    : Filtercontext_All;
+  const { smartTagList } = useAppSelector(smartTagSelector);
+  const { current_smarttag_list } = useAppSelector(recipeSelector);
+  const { lang } = useAppSelector(userSelector);
+  const current_smarttag_list_in_lang = current_smarttag_list.filter(
+    (tag) => tag.lang === lang
+  );
+  /*let currentIndex =
+    smartTagList.length && typeof currentSmartTag === 'string'
+      ? smartTagList.findIndex((tag) => {
+          return tag.name.toLowerCase() === currentSmartTag;
+        })
+      : -1;
+  if (currentIndex >= 7) {
+    currentIndex++;
+  }*/
+  /*const [smartTagsExpanded, setSmartTagsExpanded] = React.useState(
+    currentIndex >= 7 ? true : false
+  );*/
+  const [selected, setSelected] = React.useState<number>(
+    !!currentSmartTag ? 0 : -1
+  );
+  const [smartTagsExpanded, setSmartTagsExpanded] = React.useState(false);
+  const { filtersObj, setFiltersObj } = React.useContext(currentContext);
+  const dispatch = useAppDispatch();
+  React.useEffect(() => {
+    dispatch(loadAllSmartTagsByLang(lang));
+    return () => {
+      dispatch(clearSmartTagListState());
+    };
+  }, []);
+
+  const setNewSMartTagFilter = (name: string | null): void => {
+    const newFilterPortion =
+      typeof name === 'string'
+        ? {
+            some: {
+              name: {
+                contains: name,
+                mode: 'insensitive',
+              },
+            },
+          }
+        : {};
+    const queryParams = qs.parse(location.search);
+    const newQueries = {
+      ...queryParams,
+      smarttag: typeof name === 'string' ? name.toLowerCase() : '',
+    };
+    history.push({ search: qs.stringify(newQueries) });
+    setFiltersObj({ ...filtersObj, smartTags: newFilterPortion });
+  };
   return (
     <>
-      <FlexGrid
-        flexGridColumnCount={[1, 2, 4, 6]}
-        flexGridColumnGap='scale800'
-        flexGridRowGap='scale800'
-      >
-        {!isCategoryGiven && (
-          <FlexGridItem {...flexItemProps}>
-            <Category1Section isCategoryGiven={isCategoryGiven} />
-          </FlexGridItem>
+      <Block marginTop='10px' marginBottom='15px'>
+        <h4>
+          <span>{t('Smart Tags')}</span>
+          {selected > -1 ? (
+            <Button
+              onClick={() => {
+                setSelected(-1);
+                setNewSMartTagFilter(null);
+              }}
+              kind={KIND.tertiary}
+              size={BUTTONSIZE.compact}
+              overrides={{
+                BaseButton: {
+                  style: ({ $theme }) => ({
+                    marginLeft: '10px',
+                    color: '#757575',
+                  }),
+                },
+                StartEnhancer: {
+                  style: ({ $theme }) => ({
+                    marginRight: '4px',
+                  }),
+                },
+              }}
+              startEnhancer='&#10006;'
+            >
+              {t('Clear selection')}
+            </Button>
+          ) : (
+            ''
+          )}
+        </h4>
+      </Block>
+      <div className='smartTags'>
+        {/*
+        <ButtonGroup
+          mode={MODE.radio}
+          size={SIZE.compact}
+          shape={SHAPE.pill}
+          selected={selected}
+          onClick={(_event, index) => {
+            if (index === 7 || index === smartTagList.length + 1) return false;
+            setSelected(index);
+          }}
+          overrides={{
+            Root: {
+              style: {
+                flexWrap: 'wrap',
+                marginRight: '0',
+                marginLeft: '0',
+              },
+            },
+          }}
+        >
+          {smartTagList.slice(0, 7).map((smartTag) => {
+            return (
+              <Button
+                onClick={(e) => {
+                  //setIsSelected(!isSelected);
+                  setNewSMartTagFilter(e.currentTarget.innerText);
+                }}
+                key={smartTag.name}
+                kind={KIND.secondary}
+                overrides={{
+                  BaseButton: {
+                    style: ({ $theme }) => ({
+                      marginRight: '10px',
+                      marginBottom: '10px',
+                    }),
+                  },
+                }}
+              >
+                {smartTag.name}
+              </Button>
+            );
+          })}
+          {smartTagList.length > 7 && !smartTagsExpanded && (
+            <Button
+              kind={KIND.tertiary}
+              overrides={{
+                BaseButton: {
+                  style: ({ $theme }) => ({
+                    marginRight: '10px',
+                    marginBottom: '10px',
+                    backgroundColor: 'transparent',
+                  }),
+                },
+              }}
+              onClick={(e) => {
+                setSmartTagsExpanded(true);
+              }}
+            >
+              {t('Show all...')}
+            </Button>
+          )}
+          {smartTagList.length > 7 &&
+            smartTagsExpanded &&
+            smartTagList.slice(7).map((smartTag) => {
+              return (
+                <Button
+                  onClick={(e) => {
+                    //setIsSelected(!isSelected);
+                    setNewSMartTagFilter(e.currentTarget.innerText);
+                  }}
+                  key={smartTag.name}
+                  kind={KIND.secondary}
+                  overrides={{
+                    BaseButton: {
+                      style: ({ $theme }) => ({
+                        marginRight: '10px',
+                        marginBottom: '10px',
+                      }),
+                    },
+                  }}
+                >
+                  {smartTag.name}
+                </Button>
+              );
+            })}
+          {smartTagList.length > 7 && smartTagsExpanded && (
+            <Button
+              kind={KIND.tertiary}
+              overrides={{
+                BaseButton: {
+                  style: ({ $theme }) => ({
+                    marginRight: '10px',
+                    marginBottom: '10px',
+                    backgroundColor: 'transparent',
+                  }),
+                },
+              }}
+              onClick={(e) => {
+                setSmartTagsExpanded(false);
+              }}
+            >
+              {t('...Show less')}
+            </Button>
+          )}
+            </ButtonGroup>*/}
+        {selected === -1 && (
+          <ButtonGroup
+            mode={MODE.radio}
+            size={SIZE.compact}
+            shape={SHAPE.pill}
+            selected={selected}
+            onClick={(_event, index) => {
+              if (
+                index === 7 ||
+                index === current_smarttag_list_in_lang.length + 1
+              )
+                return false;
+              setSelected(index);
+            }}
+            overrides={{
+              Root: {
+                style: {
+                  flexWrap: 'wrap',
+                  marginRight: '0',
+                  marginLeft: '0',
+                },
+              },
+            }}
+          >
+            {current_smarttag_list_in_lang.slice(0, 7).map((smartTag) => {
+              return (
+                <Button
+                  onClick={(e) => {
+                    //setIsSelected(!isSelected);
+                    setNewSMartTagFilter(e.currentTarget.innerText);
+                  }}
+                  key={smartTag.name}
+                  kind={KIND.secondary}
+                  overrides={{
+                    BaseButton: {
+                      style: ({ $theme }) => ({
+                        marginRight: '10px',
+                        marginBottom: '10px',
+                      }),
+                    },
+                  }}
+                >
+                  {smartTag.name}
+                </Button>
+              );
+            })}
+            {current_smarttag_list_in_lang.length > 7 && !smartTagsExpanded && (
+              <Button
+                kind={KIND.tertiary}
+                overrides={{
+                  BaseButton: {
+                    style: ({ $theme }) => ({
+                      marginRight: '10px',
+                      marginBottom: '10px',
+                      backgroundColor: 'transparent',
+                    }),
+                  },
+                }}
+                onClick={(e) => {
+                  setSmartTagsExpanded(true);
+                }}
+              >
+                {t('Show all...')}
+              </Button>
+            )}
+            {current_smarttag_list_in_lang.length > 7 &&
+              smartTagsExpanded &&
+              current_smarttag_list_in_lang.slice(7).map((smartTag) => {
+                return (
+                  <Button
+                    onClick={(e) => {
+                      //setIsSelected(!isSelected);
+                      setNewSMartTagFilter(e.currentTarget.innerText);
+                    }}
+                    key={smartTag.name}
+                    kind={KIND.secondary}
+                    overrides={{
+                      BaseButton: {
+                        style: ({ $theme }) => ({
+                          marginRight: '10px',
+                          marginBottom: '10px',
+                        }),
+                      },
+                    }}
+                  >
+                    {smartTag.name}
+                  </Button>
+                );
+              })}
+            {current_smarttag_list_in_lang.length > 7 && smartTagsExpanded && (
+              <Button
+                kind={KIND.tertiary}
+                overrides={{
+                  BaseButton: {
+                    style: ({ $theme }) => ({
+                      marginRight: '10px',
+                      marginBottom: '10px',
+                      backgroundColor: 'transparent',
+                    }),
+                  },
+                }}
+                onClick={(e) => {
+                  setSmartTagsExpanded(false);
+                }}
+              >
+                {t('...Show less')}
+              </Button>
+            )}
+          </ButtonGroup>
         )}
-        <FlexGridItem {...flexItemProps}>
-          <Category2Section isCategoryGiven={isCategoryGiven} />
-        </FlexGridItem>
-        <FlexGridItem {...flexItemProps}>
-          <Category3Section isCategoryGiven={isCategoryGiven} />
-        </FlexGridItem>
-        <FlexGridItem {...flexItemProps}>
-          <DifficultySection isCategoryGiven={isCategoryGiven} />
-        </FlexGridItem>
-        <FlexGridItem {...flexItemProps}>
-          <KeywordSection isCategoryGiven={isCategoryGiven} />
-        </FlexGridItem>
-      </FlexGrid>
+        {selected !== -1 && (
+          <ButtonGroup
+            mode={MODE.radio}
+            size={SIZE.compact}
+            shape={SHAPE.pill}
+            selected={0}
+            onClick={(_event, index) => {
+              if (
+                index === 7 ||
+                index === current_smarttag_list_in_lang.length + 1
+              )
+                return false;
+              setSelected(index);
+            }}
+            overrides={{
+              Root: {
+                style: {
+                  flexWrap: 'wrap',
+                  marginRight: '0',
+                  marginLeft: '0',
+                },
+              },
+            }}
+          >
+            <Button
+              onClick={(e) => {
+                //setIsSelected(!isSelected);
+                //setNewSMartTagFilter(e.currentTarget.innerText);
+              }}
+              kind={KIND.secondary}
+              overrides={{
+                BaseButton: {
+                  style: ({ $theme }) => ({
+                    marginRight: '10px',
+                    marginBottom: '10px',
+                  }),
+                },
+              }}
+            >
+              {current_smarttag_list_in_lang.length &&
+              currentSmartTag &&
+              current_smarttag_list_in_lang.filter((tag) => {
+                return tag.name.toLowerCase() === currentSmartTag;
+              }).length
+                ? current_smarttag_list_in_lang.filter((tag) => {
+                    return tag.name.toLowerCase() === currentSmartTag;
+                  })[0].name
+                : typeof currentSmartTag === 'string'
+                ? currentSmartTag?.charAt(0).toUpperCase() +
+                  currentSmartTag?.slice(1)
+                : ''}
+            </Button>
+          </ButtonGroup>
+        )}
+      </div>
+    </>
+  );
+};
+const RecipeFilters = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
+  const location = useLocation();
+  const currentQuery = qs.parse(location.search);
+  const filterAppliedArray = [
+    !!currentQuery.category1,
+    !!currentQuery.category2,
+    !!currentQuery.category3,
+    !!currentQuery.smarttag,
+    !!currentQuery.difficulty,
+    !!currentQuery.keyword,
+  ];
+  const filterApplied = filterAppliedArray.reduce(
+    (accumulator, currentValue) => {
+      return accumulator || currentValue;
+    }
+  );
+  const [filtersExpanded, setFiltersExpanded] =
+    React.useState<boolean>(filterApplied);
+  const { t } = useTranslation();
+  const [css] = useStyletron();
+
+  return (
+    <>
+      <div>
+        <Button
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+          kind={KIND.secondary}
+          endEnhancer={() => {
+            return filtersExpanded ? (
+              <ChevronUp size={24} />
+            ) : (
+              <ChevronDown size={24} />
+            );
+          }}
+          overrides={{
+            BaseButton: {
+              style: {
+                fontSize: '18px',
+                lineHeight: '20px',
+                marginBottom: '0',
+              },
+            },
+            EndEnhancer: {
+              style: {
+                marginLeft: '5px',
+              },
+            },
+          }}
+        >
+          {filtersExpanded ? t('Collapse filters') : t('Expand filters')}
+        </Button>
+        {filterApplied ? (
+          <span
+            className={css({
+              marginLeft: '10px',
+            })}
+          >
+            {`${filterAppliedArray.filter(Boolean).length} ${t(
+              'Filter applied'
+            )}`}
+          </span>
+        ) : (
+          ''
+        )}
+      </div>
+      <div
+        className={css({
+          height: filtersExpanded ? 'auto' : '0',
+          overflow: 'hidden',
+          transition: 'all 1s ease-out',
+        })}
+      >
+        <FlexGrid
+          flexGridColumnCount={[1, 2, 4, 6]}
+          flexGridColumnGap={['scale400', 'scale400', 'scale600', 'scale800']}
+          flexGridRowGap={['scale400', 'scale400', 'scale600', 'scale800']}
+        >
+          {!isCategoryGiven && (
+            <FlexGridItem {...flexItemProps}>
+              <Category1Section isCategoryGiven={isCategoryGiven} />
+            </FlexGridItem>
+          )}
+          <FlexGridItem {...flexItemProps}>
+            <Category2Section isCategoryGiven={isCategoryGiven} />
+          </FlexGridItem>
+          <FlexGridItem {...flexItemProps}>
+            <Category3Section isCategoryGiven={isCategoryGiven} />
+          </FlexGridItem>
+          <FlexGridItem {...flexItemProps}>
+            <DifficultySection isCategoryGiven={isCategoryGiven} />
+          </FlexGridItem>
+          <FlexGridItem {...flexItemProps}>
+            <KeywordSection isCategoryGiven={isCategoryGiven} />
+          </FlexGridItem>
+        </FlexGrid>
+
+        <SmartTagSection isCategoryGiven={isCategoryGiven} />
+      </div>
     </>
   );
 };

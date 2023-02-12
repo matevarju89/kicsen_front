@@ -1,15 +1,61 @@
 import React from 'react';
 import { Grid, Cell } from 'baseui/layout-grid';
-import { useStyletron } from 'styletron-react';
-
+import { useStyletron } from 'baseui';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { loadUserBase, userSelector } from '../user/userSlice';
+import { authSelector } from '../auth/authSlice';
+import Cookies from 'universal-cookie';
+import { FamilyData } from '../user/types';
 export interface LayoutProps {
   children: React.ReactNode;
 }
 
+/*const cookies = new Cookies();
+const currentFamilyFromCookie = cookies.get('cur_fam')
+  ? cookies.get('cur_fam')
+  : null;*/
+
+const currentFamily_from_storage = window.localStorage.getItem('cur_fam')
+  ? (window.localStorage.getItem('cur_fam') as string)
+  : null;
+export interface ICurrentFamilyContext {
+  currentFamily: FamilyData | null;
+  setCurrentFamily: React.Dispatch<React.SetStateAction<FamilyData | null>>;
+}
+const currentFamilyObjDefaults: ICurrentFamilyContext = {
+  currentFamily: null,
+  setCurrentFamily: () => null,
+};
+export const CurrentFamilyContext = React.createContext(
+  currentFamilyObjDefaults
+);
+
 const Layout = (props: LayoutProps) => {
-  const [css] = useStyletron();
+  const [css, theme] = useStyletron();
+  const dispatch = useAppDispatch();
+  const { username } = useAppSelector(authSelector);
+  const { families } = useAppSelector(userSelector);
+  const [currentFamily, setCurrentFamily] = React.useState<FamilyData | null>(
+    null
+  );
+  React.useEffect(() => {
+    dispatch(loadUserBase(username));
+  }, [username]);
+  React.useEffect(() => {
+    if (Array.isArray(families)) {
+      const currentFam =
+        families.length > 0 && currentFamily_from_storage
+          ? families?.filter((fam) => {
+              return fam.id === currentFamily_from_storage;
+            })[0]
+          : families.length > 0
+          ? families[0]
+          : null;
+      setCurrentFamily(currentFam);
+    }
+  }, [families]);
   return (
-    <>
+    <CurrentFamilyContext.Provider value={{ currentFamily, setCurrentFamily }}>
       <Grid
         overrides={{
           Grid: {
@@ -20,7 +66,14 @@ const Layout = (props: LayoutProps) => {
         }}
       >
         <Cell span={12}>
-          <div className={css({ padding: '50px 0' })}>{props.children}</div>
+          <div
+            className={css({
+              padding: '30px 0',
+              [theme.mediaQuery.medium]: { padding: '50px 0' },
+            })}
+          >
+            {props.children}
+          </div>
         </Cell>
       </Grid>
       <footer
@@ -44,12 +97,11 @@ const Layout = (props: LayoutProps) => {
             </a>
           </li>
         </ul>
-        <p
-          className='copyright'
-          style={{ color: '#fff' }}
-        >{`Made By Mate © ${new Date().getFullYear()}`}</p>
+        <p className='copyright' style={{ color: '#fff' }}>
+          Made with <span>&#10084;</span> by Mate © {new Date().getFullYear()}
+        </p>
       </footer>
-    </>
+    </CurrentFamilyContext.Provider>
   );
 };
 
