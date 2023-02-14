@@ -85,7 +85,7 @@
       "Choosing difficulty is required": "A néhézségi fok kiválasztása kötelező",
       "Choose difficulty": "Válassz nehézségi fokot",
       "Search for a recipe name or ingredient": "Keress egy receptre vagy hozzávalóra",
-      "Discover the depht of your family's cookbook!": "Fedezd fel a családod receptgyűjteményét!",
+      "Discover the depht of the family's cookbook!": "Fedezd fel a család receptgyűjteményét!",
       "Edit recipe": "Recept szerkesztése",
       "Recipe uplad error": "Recept feltöltési hiba",
       "Error: Family is not detectable": "Hiba: a családod nem található",
@@ -112,7 +112,9 @@
       "Collapse filters": "Filterek bezárása",
       "Filter applied": "filter aktív",
       "Or use a smart tag to find what your are looking for": "Vagy használd az elérhető tulajdonságok egyikét",
-      "Congrats, the recipe has been uploaded": "Köszönjük, a recept feltöltésre került"
+      "Congrats, the recipe has been uploaded": "Köszönjük, a recept feltöltésre került",
+      "Sorry, you can add or edit recipes only in your own family": "Csak a saját családodban addhatsz hozzá vagy módosíthatsz recepteket.",
+      "Change family settings": "A család beállításokhoz"
     }
   }
 }

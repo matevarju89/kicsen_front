@@ -36,6 +36,7 @@ import {
 import UploadModal from '../common/UploadModal';
 import QuillEditor from '../common/QuillEditor';
 import { Quill } from 'react-quill';
+import NoEdit from './NoEdit';
 
 const RecipeEdit = () => {
   const dispatch = useAppDispatch();
@@ -44,7 +45,7 @@ const RecipeEdit = () => {
   const [t] = useTranslation();
   const [css] = useStyletron();
   const [imgErrorMessage, setImgErrorMessage] = useState('');
-  const { families, lang } = useAppSelector(userSelector);
+  const { families, lang, ownFamily } = useAppSelector(userSelector);
   const { recipeDetail } = useAppSelector(recipeSelector);
   const { smartTagList } = useAppSelector(smartTagSelector);
   const [uploadState, dispatchUpload] = useReducer(
@@ -103,259 +104,265 @@ const RecipeEdit = () => {
     family: recipeDetail?.family ? recipeDetail.family : { id: '' },
   };
   return (
-    <UploadContext.Provider value={contextValue}>
-      <Formik
-        initialValues={initialValues}
-        enableReinitialize={true}
-        validationSchema={yup.object({
-          title: yup.string().required(t('The name of the dish is required')),
-          category1: yup
-            .mixed()
-            .oneOf(['appetizer', 'soup', 'main', 'dessert'])
-            .required(t('Course type is required')),
-          category2: yup
-            .mixed()
-            .oneOf(['salty', 'sweet'])
-            .required(t('Choosing category is required')),
-          category3: yup
-            .mixed()
-            .oneOf(['vegan', 'nonvegan'])
-            .required(t('Choosing category is required')),
-          difficulty: yup
-            .mixed()
-            .oneOf(['easy', 'medium', 'hard'])
-            .required(t('Choosing difficulty is required')),
-          description: yup
-            .string()
-            .max(500, t('Description should be max 500 characters'))
-            .required(t('Description is required')),
-          ingredients: yup.string().required(t('Ingredients are required')),
-        })}
-        onSubmit={(values, actions) => {
-          setTimeout(async () => {
-            if (families) {
-              values.family = { id: families[0].id };
-              let image: any = [];
-              const smartTagUploadIDs = await addSmartTags(
-                values,
-                uploadState,
-                dispatch,
-                dispatchUpload,
-                smartTagList,
-                lang,
-                addedImage
-              );
-              setTimeout(async function () {
-                if (!uploadState.isError) {
-                  if (addedImage) {
-                    dispatchUpload({
-                      type: 'initiateImageUpload',
-                    });
-                    image = await addImage(values, addedImage, dispatchUpload);
-                  } else if (
-                    Array.isArray(recipeDetail?.images) &&
-                    recipeDetail?.images.length
-                  ) {
-                    image = [{ id: recipeDetail.images[0].id }];
-                  }
-                  setTimeout(async function () {
-                    if (!uploadState.isError) {
+    <NoEdit>
+      <UploadContext.Provider value={contextValue}>
+        <Formik
+          initialValues={initialValues}
+          enableReinitialize={true}
+          validationSchema={yup.object({
+            title: yup.string().required(t('The name of the dish is required')),
+            category1: yup
+              .mixed()
+              .oneOf(['appetizer', 'soup', 'main', 'dessert'])
+              .required(t('Course type is required')),
+            category2: yup
+              .mixed()
+              .oneOf(['salty', 'sweet'])
+              .required(t('Choosing category is required')),
+            category3: yup
+              .mixed()
+              .oneOf(['vegan', 'nonvegan'])
+              .required(t('Choosing category is required')),
+            difficulty: yup
+              .mixed()
+              .oneOf(['easy', 'medium', 'hard'])
+              .required(t('Choosing difficulty is required')),
+            description: yup
+              .string()
+              .max(500, t('Description should be max 500 characters'))
+              .required(t('Description is required')),
+            ingredients: yup.string().required(t('Ingredients are required')),
+          })}
+          onSubmit={(values, actions) => {
+            setTimeout(async () => {
+              if (ownFamily) {
+                values.family = { id: ownFamily.id };
+                let image: any = [];
+                const smartTagUploadIDs = await addSmartTags(
+                  values,
+                  uploadState,
+                  dispatch,
+                  dispatchUpload,
+                  smartTagList,
+                  lang,
+                  addedImage
+                );
+                setTimeout(async function () {
+                  if (!uploadState.isError) {
+                    if (addedImage) {
                       dispatchUpload({
-                        type: 'initiateRecipeUpload',
+                        type: 'initiateImageUpload',
                       });
-                      try {
-                        await dispatch(
-                          updateRecipe({
-                            recipe: {
-                              ...values,
-                              smartTags: { set: smartTagUploadIDs || [] },
-                              images: { set: image },
-                            },
-                            id,
-                          })
-                        );
-                        setTimeout(() => {
-                          dispatchUpload({ type: 'set_success' });
-                        }, 1000);
-                        setTimeout(() => {
-                          history.push(`/recipes/detail/${id}`);
-                        }, 2000);
-                      } catch (e) {
-                        setTimeout(() => {
-                          dispatchUpload({ type: 'set_error' });
-                        }, 1000);
-                      }
+                      image = await addImage(
+                        values,
+                        addedImage,
+                        dispatchUpload
+                      );
+                    } else if (
+                      Array.isArray(recipeDetail?.images) &&
+                      recipeDetail?.images.length
+                    ) {
+                      image = [{ id: recipeDetail.images[0].id }];
                     }
-                  }, 1000);
-                }
-              }, 1000);
-            } else {
-              toast.error(t('Error: Family is not detectable'));
-            }
-          }, 1000);
-        }}
-      >
-        {(props: FormikProps<RecipePayloadData>) => {
-          return (
-            <Form>
-              <p
-                className={css({
-                  fontWeight: 'bold',
-                })}
-              >
-                {t('Add the basic information about the recipe!')}
-              </p>
-              <FormInput
-                id='title'
-                name='title'
-                type='text'
-                placeholder={t('Add the name of the dish')}
-                clearOnEscape
-              />
-              <SelectInput
-                name='category1'
-                initialValue={initialValues.category1}
-                options={[
-                  { label: t('Appetizer'), category1: 'appetizer' },
-                  { label: t('Soup'), category1: 'soup' },
-                  { label: t('Main'), category1: 'main' },
-                  { label: t('Dessert'), category1: 'dessert' },
-                ]}
-                placeholder={t('Choose course type')}
-                valueKey='category1'
-                multi={false}
-              />
-              <SelectInput
-                name='category2'
-                initialValue={initialValues.category2}
-                options={[
-                  { label: t('Salty'), category2: 'salty' },
-                  { label: t('Sweet'), category2: 'sweet' },
-                ]}
-                placeholder={t('Choose salty or sweet')}
-                valueKey='category2'
-                multi={false}
-              />
-              <SelectInput
-                name='category3'
-                initialValue={initialValues.category3}
-                options={[
-                  { label: t('Vegan'), category3: 'vegan' },
-                  { label: t('Non-Vegan'), category3: 'nonvegan' },
-                ]}
-                placeholder={t('Choose vegan or non-vegan')}
-                valueKey='category3'
-                multi={false}
-              />
-              <SelectInput
-                name='smartTags'
-                initialValue={initialValues.smartTags}
-                creatable
-                maxDropdownHeight='200px'
-                options={smartTagOptions}
-                placeholder={t('Select smart tags')}
-                valueKey='smartTags'
-                multi={true}
-              />
-              <SelectInput
-                name='difficulty'
-                initialValue={initialValues.difficulty}
-                options={[
-                  { label: t('easy'), difficulty: 'easy' },
-                  { label: t('medium'), difficulty: 'medium' },
-                  { label: t('hard'), difficulty: 'hard' },
-                ]}
-                placeholder={t('Choose difficulty')}
-                valueKey='difficulty'
-                multi={false}
-              />
-              <p
-                className={css({
-                  fontWeight: 'bold',
-                  marginTop: '30px',
-                })}
-              >
-                {t('What are the ingredients?')}
-              </p>
-              <IngredientInputGroup
-                initialValue={initialValues.ingredients}
-                name='ingredients'
-              />
-              <p
-                className={css({
-                  fontWeight: 'bold',
-                  marginTop: '30px',
-                })}
-              >
-                {t('How is it made?')}
-              </p>
-              {/*<TextArea
+                    setTimeout(async function () {
+                      if (!uploadState.isError) {
+                        dispatchUpload({
+                          type: 'initiateRecipeUpload',
+                        });
+                        try {
+                          await dispatch(
+                            updateRecipe({
+                              recipe: {
+                                ...values,
+                                smartTags: { set: smartTagUploadIDs || [] },
+                                images: { set: image },
+                              },
+                              id,
+                            })
+                          );
+                          setTimeout(() => {
+                            dispatchUpload({ type: 'set_success' });
+                          }, 1000);
+                          setTimeout(() => {
+                            history.push(`/recipes/detail/${id}`);
+                          }, 2000);
+                        } catch (e) {
+                          setTimeout(() => {
+                            dispatchUpload({ type: 'set_error' });
+                          }, 1000);
+                        }
+                      }
+                    }, 1000);
+                  }
+                }, 1000);
+              } else {
+                toast.error(t('Error: Family is not detectable'));
+              }
+            }, 1000);
+          }}
+        >
+          {(props: FormikProps<RecipePayloadData>) => {
+            return (
+              <Form>
+                <p
+                  className={css({
+                    fontWeight: 'bold',
+                  })}
+                >
+                  {t('Add the basic information about the recipe!')}
+                </p>
+                <FormInput
+                  id='title'
+                  name='title'
+                  type='text'
+                  placeholder={t('Add the name of the dish')}
+                  clearOnEscape
+                />
+                <SelectInput
+                  name='category1'
+                  initialValue={initialValues.category1}
+                  options={[
+                    { label: t('Appetizer'), category1: 'appetizer' },
+                    { label: t('Soup'), category1: 'soup' },
+                    { label: t('Main'), category1: 'main' },
+                    { label: t('Dessert'), category1: 'dessert' },
+                  ]}
+                  placeholder={t('Choose course type')}
+                  valueKey='category1'
+                  multi={false}
+                />
+                <SelectInput
+                  name='category2'
+                  initialValue={initialValues.category2}
+                  options={[
+                    { label: t('Salty'), category2: 'salty' },
+                    { label: t('Sweet'), category2: 'sweet' },
+                  ]}
+                  placeholder={t('Choose salty or sweet')}
+                  valueKey='category2'
+                  multi={false}
+                />
+                <SelectInput
+                  name='category3'
+                  initialValue={initialValues.category3}
+                  options={[
+                    { label: t('Vegan'), category3: 'vegan' },
+                    { label: t('Non-Vegan'), category3: 'nonvegan' },
+                  ]}
+                  placeholder={t('Choose vegan or non-vegan')}
+                  valueKey='category3'
+                  multi={false}
+                />
+                <SelectInput
+                  name='smartTags'
+                  initialValue={initialValues.smartTags}
+                  creatable
+                  maxDropdownHeight='200px'
+                  options={smartTagOptions}
+                  placeholder={t('Select smart tags')}
+                  valueKey='smartTags'
+                  multi={true}
+                />
+                <SelectInput
+                  name='difficulty'
+                  initialValue={initialValues.difficulty}
+                  options={[
+                    { label: t('easy'), difficulty: 'easy' },
+                    { label: t('medium'), difficulty: 'medium' },
+                    { label: t('hard'), difficulty: 'hard' },
+                  ]}
+                  placeholder={t('Choose difficulty')}
+                  valueKey='difficulty'
+                  multi={false}
+                />
+                <p
+                  className={css({
+                    fontWeight: 'bold',
+                    marginTop: '30px',
+                  })}
+                >
+                  {t('What are the ingredients?')}
+                </p>
+                <IngredientInputGroup
+                  initialValue={initialValues.ingredients}
+                  name='ingredients'
+                />
+                <p
+                  className={css({
+                    fontWeight: 'bold',
+                    marginTop: '30px',
+                  })}
+                >
+                  {t('How is it made?')}
+                </p>
+                {/*<TextArea
                 placeholder={t('Add preparation instructions')}
                 id='description'
                 name='description'
                 clearOnEscape={false}
               />*/}
-              <QuillEditor name='description' id='description' />
+                <QuillEditor name='description' id='description' />
 
-              <FileUploader
-                /*disabled={imageAdded}*/
-                errorMessage={imgErrorMessage}
-                maxSize={1000000}
-                accept='.png, .jpg, .jpeg'
-                onDropRejected={() => {
-                  setImgErrorMessage(
-                    t('Incorrect File Type(jpeg,jpg,png) or Size(max 1MB)')
-                  );
-                }}
-                onRetry={() => {
-                  setImgErrorMessage('');
-                }}
-                onDropAccepted={async (acceptedFiles, rejectedFiles) => {
-                  setAddedImage(acceptedFiles[0]);
-                  setImageAdded(true);
-                }}
-                progressMessage={
-                  imageAdded ? (
-                    <StyledLink href=''>{t('Image added')}</StyledLink>
-                  ) : (
-                    ''
-                  )
-                }
-                onCancel={() => {
-                  setAddedImage(null);
-                  setImageAdded(false);
-                }}
-                overrides={{
-                  Root: {
-                    style: {
-                      marginTop: '20px',
+                <FileUploader
+                  /*disabled={imageAdded}*/
+                  errorMessage={imgErrorMessage}
+                  maxSize={1000000}
+                  accept='.png, .jpg, .jpeg'
+                  onDropRejected={() => {
+                    setImgErrorMessage(
+                      t('Incorrect File Type(jpeg,jpg,png) or Size(max 1MB)')
+                    );
+                  }}
+                  onRetry={() => {
+                    setImgErrorMessage('');
+                  }}
+                  onDropAccepted={async (acceptedFiles, rejectedFiles) => {
+                    setAddedImage(acceptedFiles[0]);
+                    setImageAdded(true);
+                  }}
+                  progressMessage={
+                    imageAdded ? (
+                      <StyledLink href=''>{t('Image added')}</StyledLink>
+                    ) : (
+                      ''
+                    )
+                  }
+                  onCancel={() => {
+                    setAddedImage(null);
+                    setImageAdded(false);
+                  }}
+                  overrides={{
+                    Root: {
+                      style: {
+                        marginTop: '20px',
+                      },
                     },
-                  },
-                  Spinner: {
-                    style: {
-                      display: 'none',
+                    Spinner: {
+                      style: {
+                        display: 'none',
+                      },
                     },
-                  },
-                }}
-              />
-              <Button
-                type='submit'
-                overrides={{
-                  BaseButton: {
-                    style: {
-                      marginTop: '30px',
+                  }}
+                />
+                <Button
+                  type='submit'
+                  overrides={{
+                    BaseButton: {
+                      style: {
+                        marginTop: '30px',
+                      },
                     },
-                  },
-                }}
-              >
-                {t('Update Recipe')}
-              </Button>
-            </Form>
-          );
-        }}
-      </Formik>
-      {uploadState.isUploadModalShown && <UploadModal />}
-    </UploadContext.Provider>
+                  }}
+                >
+                  {t('Update Recipe')}
+                </Button>
+              </Form>
+            );
+          }}
+        </Formik>
+        {uploadState.isUploadModalShown && <UploadModal />}
+      </UploadContext.Provider>
+    </NoEdit>
   );
 };
 
