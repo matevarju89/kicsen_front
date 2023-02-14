@@ -20,4 +20,5 @@ export type UserData = {
   roles: Array<string>;
   updatedAt: Date;
   username: string;
+  ownFamily?: FamilyData | null;
 };

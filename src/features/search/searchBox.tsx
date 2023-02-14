@@ -63,7 +63,7 @@ const SearchBox = (props: any) => {
       })}
     >
       <h2 className={css({ textAlign: 'center' })}>
-        {t("Discover the depht of your family's cookbook!")}
+        {t("Discover the depht of the family's cookbook!")}
       </h2>
       <div
         className={css({

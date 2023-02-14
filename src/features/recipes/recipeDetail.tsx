@@ -11,6 +11,7 @@ import {
 } from './recipeSlice';
 import { useHistory, useParams } from 'react-router-dom';
 import { Skeleton } from 'baseui/skeleton';
+import { userSelector } from '../user/userSlice';
 
 const CategoryTag = ({ children }: { children: React.ReactNode }) => {
   const [css, theme] = useStyletron();
@@ -42,6 +43,7 @@ export const RecipeDetail = () => {
   const [t] = useTranslation();
   const [css, theme] = useStyletron();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { lang } = useAppSelector(userSelector);
   useEffect(() => {
     dispatch(loadRecipe(id));
     return () => {
@@ -125,9 +127,13 @@ export const RecipeDetail = () => {
               {recipeDetail.category3 && t(recipeDetail.category3)}
             </CategoryTag>
             {recipeDetail.smartTags &&
-              recipeDetail.smartTags.map((tag) => {
-                return <CategoryTag key={tag.name}>{tag.name}</CategoryTag>;
-              })}
+              recipeDetail.smartTags
+                .filter((tag) => {
+                  return tag.lang === lang;
+                })
+                .map((tag) => {
+                  return <CategoryTag key={tag.name}>{tag.name}</CategoryTag>;
+                })}
           </Block>
           <h2
             className={css({

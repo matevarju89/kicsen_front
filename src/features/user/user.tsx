@@ -38,9 +38,9 @@ const User = () => {
         <Avatar name={userData.username} size={size} key={size} />
       ))}
       <p className={css({ display: 'flex' })}>
-        <span
-          className={css({ display: 'inline-block', marginRight: '10px' })}
-        >{`${t('Current language')}: ${t('English')}`}</span>
+        <span className={css({ display: 'inline-block', marginRight: '10px' })}>
+          {t('Current language')}: <strong>{t('English')}</strong>
+        </span>
         <Button
           onClick={() => setLanguage()}
           kind={KIND.secondary}
@@ -55,33 +55,59 @@ const User = () => {
           <p className={css({ display: 'flex' })}>
             <span
               className={css({ display: 'inline-block', marginRight: '10px' })}
-            >{`${t('Currently viewed family')}: ${`${
-              currentFamily.description
-            } ${t('Family')}`}`}</span>
+            >
+              {t('Currently viewed family')}:{' '}
+              <strong>
+                {currentFamily.description} {t('Family')}
+              </strong>
+            </span>
           </p>
-          <p>
+          <p className={css({ display: 'flex' })}>
             <span className={css({ marginRight: '10px' })}>
               {t('Change Family')}:
             </span>
             {userData.families.length > 1 ? (
               userData.families
                 ?.filter((fam) => fam.id !== currentFamily?.id)
-                .map((fam) => (
-                  <Button
-                    onClick={() => setFamily(fam)}
-                    kind={KIND.secondary}
-                    size={SIZE.mini}
-                    shape={SHAPE.pill}
-                    key={fam.id}
-                    overrides={{
-                      BaseButton: {
-                        style: { marginRight: '5px', marginBottom: '5px' },
-                      },
-                    }}
-                  >
-                    {`${fam.description} ${t('Family')}`}
-                  </Button>
-                ))
+                .map((fam) => {
+                  const isOwnFam =
+                    fam.id === userData.ownFamily?.id
+                      ? () => {
+                          if (fam.id === userData.ownFamily?.id) {
+                            return (
+                              <img
+                                width='12px'
+                                height='12px'
+                                src='/home.svg'
+                                alt='home icon'
+                              />
+                            );
+                          }
+                        }
+                      : null;
+                  return (
+                    <Button
+                      startEnhancer={isOwnFam}
+                      onClick={() => setFamily(fam)}
+                      kind={KIND.secondary}
+                      size={SIZE.mini}
+                      shape={SHAPE.pill}
+                      key={fam.id}
+                      overrides={{
+                        StartEnhancer: {
+                          style: {
+                            marginRight: '5px',
+                          },
+                        },
+                        BaseButton: {
+                          style: { marginRight: '5px', marginBottom: '5px' },
+                        },
+                      }}
+                    >
+                      {`${fam.description} ${t('Family')}`}
+                    </Button>
+                  );
+                })
             ) : (
               <span>{t("You haven't been added to other families yet")}</span>
             )}

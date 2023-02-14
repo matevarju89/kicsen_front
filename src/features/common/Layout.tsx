@@ -34,7 +34,7 @@ const Layout = (props: LayoutProps) => {
   const [css, theme] = useStyletron();
   const dispatch = useAppDispatch();
   const { username } = useAppSelector(authSelector);
-  const { families } = useAppSelector(userSelector);
+  const { families, ownFamily } = useAppSelector(userSelector);
   const [currentFamily, setCurrentFamily] = React.useState<FamilyData | null>(
     null
   );

@@ -19,6 +19,7 @@ interface IUserState {
   username: string;
   loading: boolean;
   errorMessage: string | undefined;
+  ownFamily?: FamilyData | null;
   lang: string;
 }
 
@@ -28,15 +29,10 @@ interface IUserAPIError {
   error?: string;
 }
 
-//const cookies = new Cookies();
-
 const defaultLanguage = window.localStorage.getItem('language')
   ? (window.localStorage.getItem('language') as string)
   : 'Hu';
 
-/*const currentFamilyCookie = cookies.get('cur_fam')
-  ? cookies.get('cur_fam')
-  : '';*/
 const currentFamily_from_storage = window.localStorage.getItem('cur_fam')
   ? (window.localStorage.getItem('cur_fam') as string)
   : '';
@@ -55,6 +51,7 @@ const initialState: IUserState = {
   loading: false,
   errorMessage: '',
   lang: defaultLanguage,
+  ownFamily: null,
 };
 
 export const loadUserBase = createAsyncThunk<
@@ -108,6 +105,7 @@ export const userSlice = createSlice({
       state.username = '';
       state.loading = false;
       state.errorMessage = '';
+      state.ownFamily = null;
       return state;
     },
     setLang: (state, { payload }) => {
@@ -118,36 +116,15 @@ export const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loadUserBase.fulfilled, (state, { payload }) => {
-        /*console.log('payload', payload);
-        const currentFamily =
-          !!currentFamilyCookie && !!payload.families
-            ? payload.families.filter(
-                (fam) => (fam.id = currentFamilyCookie)
-              )[0]
-            : null;
-        console.log('currentFamily', currentFamily);*/
         state.firstName = payload.firstName;
         state.families = payload.families;
-        /*state.currentFamily =
-          currentFamilyCookie && payload.families
-            ? payload.families.filter(
-                (fam) => (fam.id = currentFamilyCookie)
-              )[0]
-            : payload.families
-            ? payload.families[0]
-            : null;*/
-        /*console.log(
-          'showing state',
-          !!currentFamilyCookie && !!payload.families,
-          payload.families?.filter((fam) => (fam.id = currentFamilyCookie))[0],
-          payload.families
-        );*/
         state.id = payload.id;
         state.lastName = payload.lastName;
         state.roles = payload.roles;
         state.username = payload.username;
         state.loading = false;
         state.errorMessage = '';
+        state.ownFamily = payload.ownFamily;
         state.lang = defaultLanguage;
         return state;
       })
