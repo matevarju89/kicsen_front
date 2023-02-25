@@ -12,6 +12,8 @@ import {
 import { useHistory, useParams } from 'react-router-dom';
 import { Skeleton } from 'baseui/skeleton';
 import { userSelector } from '../user/userSlice';
+import RatingsForm from '../ratings/RatingsForm';
+import RatingItem from '../common/RatingItem';
 
 const CategoryTag = ({ children }: { children: React.ReactNode }) => {
   const [css, theme] = useStyletron();
@@ -43,7 +45,6 @@ export const RecipeDetail = () => {
   const [t] = useTranslation();
   const [css, theme] = useStyletron();
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { lang } = useAppSelector(userSelector);
   useEffect(() => {
     dispatch(loadRecipe(id));
     return () => {
@@ -61,7 +62,7 @@ export const RecipeDetail = () => {
       )}
       {recipeDetailLoading && (
         <>
-          <Skeleton width='500px' height='375px' animation />
+          <Skeleton width='500px' height='280px' animation />
           <Skeleton
             rows={3}
             width='200px'
@@ -82,7 +83,7 @@ export const RecipeDetail = () => {
           {!imageLoaded && (
             <Skeleton
               width='100%'
-              height='375px'
+              height='280px'
               animation
               overrides={{
                 Root: {
@@ -127,13 +128,9 @@ export const RecipeDetail = () => {
               {recipeDetail.category3 && t(recipeDetail.category3)}
             </CategoryTag>
             {recipeDetail.smartTags &&
-              recipeDetail.smartTags
-                .filter((tag) => {
-                  return tag.lang === lang;
-                })
-                .map((tag) => {
-                  return <CategoryTag key={tag.name}>{tag.name}</CategoryTag>;
-                })}
+              recipeDetail.smartTags.map((tag) => {
+                return <CategoryTag key={tag.name}>{tag.name}</CategoryTag>;
+              })}
           </Block>
           <h2
             className={css({
@@ -170,10 +167,17 @@ export const RecipeDetail = () => {
             <span
               className={css({
                 fontWeight: 'bold',
+                marginRight: '10px',
               })}
             >
               {t('Ingredients')}
             </span>
+            {!!recipeDetail.forHowMany && (
+              <span>
+                ({recipeDetail.forHowMany}{' '}
+                {recipeDetail.forHowMany > 1 ? t('servings') : t('serving')})
+              </span>
+            )}
           </Block>
           <Block marginBottom='30px' marginTop='10px'>
             {recipeDetail.ingredients.split(',').map((ingredient) => {
@@ -203,6 +207,20 @@ export const RecipeDetail = () => {
             className='quill-desc'
             dangerouslySetInnerHTML={{ __html: recipeDetail.description }}
           />
+          <Block marginBottom={'15px'} marginTop={'30px'}>
+            <span
+              className={css({
+                fontWeight: 'bold',
+              })}
+            >
+              {t('Ratings')}
+            </span>
+          </Block>
+          {recipeDetail.ratings?.map((rating) => {
+            return <RatingItem key={rating.id} rating={rating} />;
+          })}
+
+          <RatingsForm />
         </>
       )}
     </div>

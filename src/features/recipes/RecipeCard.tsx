@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { styled, useStyletron } from 'baseui';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Block } from 'baseui/block';
 import { Skeleton } from 'baseui/skeleton';
 import { Button } from 'baseui/button';

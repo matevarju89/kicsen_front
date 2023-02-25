@@ -1,29 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { useStyletron } from 'baseui';
 import { useHistory } from 'react-router-dom';
 import qs from 'query-string';
 import { Input } from 'baseui/input';
-import { Block } from 'baseui/block';
 import { Button, SIZE, SHAPE, KIND } from 'baseui/button';
 import { useTranslation } from 'react-i18next';
 import { smartTagSelector } from '../smartTag/smartTagSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { CurrentFamilyContext } from '../common/Layout';
 import {
-  loadAllSmartTagsByLang,
+  loadAllSmartTags,
   clearSmartTagListState,
 } from '../smartTag/smartTagSlice';
 import { BlockProps } from 'baseui/block';
 import { userSelector } from '../user/userSlice';
 
-const searchBarProps: BlockProps = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: '20px',
-};
-
 const SearchBox = (props: any) => {
-  const [css, theme] = useStyletron();
+  const [css] = useStyletron();
   const [value, setValue] = React.useState('');
   const [smartTagsExpanded, setSmartTagsExpanded] = React.useState(false);
   const [t] = useTranslation();
@@ -31,14 +24,17 @@ const SearchBox = (props: any) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { smartTagList } = useAppSelector(smartTagSelector);
 
-  const { lang } = useAppSelector(userSelector);
+  const { currentFamily } = useContext(CurrentFamilyContext);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(loadAllSmartTagsByLang(lang));
-    return () => {
-      dispatch(clearSmartTagListState());
-    };
-  }, []);
+    if (currentFamily) {
+      //dispatch(loadAllSmartTagsByLang(lang));
+      dispatch(loadAllSmartTags(currentFamily.id));
+      return () => {
+        dispatch(clearSmartTagListState());
+      };
+    }
+  }, [currentFamily]);
   const submit = () => {
     const newQueryFragment = qs.stringify({
       keyword:

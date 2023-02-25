@@ -30,6 +30,7 @@ export type RecipeData = {
   ratings?: Array<RatingData>;
   title: string;
   updatedAt?: Date;
+  forHowMany: number;
   family: { id: string };
 };
 
@@ -40,5 +41,5 @@ export type RatingData = {
   postedBy?: UserData;
   recipe?: RecipeData;
   stars: number;
-  updatedAt: Date;
+  updatedAt?: Date;
 };

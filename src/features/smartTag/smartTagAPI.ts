@@ -7,8 +7,8 @@ export type CreateManyBatchResponse = {
 };
 
 class SmartTagDataService {
-  getAll() {
-    return api.get<Array<SmartTagData>>('/smartTags');
+  getAll(family: string) {
+    return api.get<Array<SmartTagData>>(`/families/${family}/smartTags`);
   }
 
   get(id: string) {

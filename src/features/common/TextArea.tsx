@@ -7,6 +7,8 @@ interface ITextAreaFieldProps {
   name: string;
   placeholder: string;
   clearOnEscape: boolean;
+  overrides?: any;
+  onClick?: any;
 }
 
 const TextArea = (props: ITextAreaFieldProps) => {
@@ -15,30 +17,10 @@ const TextArea = (props: ITextAreaFieldProps) => {
   return (
     <div
       className={css({
-        marginTop: '20px',
+        marginTop: '0px',
       })}
     >
-      <Textarea
-        {...field}
-        {...props}
-        overrides={{
-          Input: {
-            style: {
-              maxHeight: '400px',
-              minHeight: '200px',
-              minWidth: '300px',
-              width: '100vw',
-              resize: 'both',
-            },
-          },
-          InputContainer: {
-            style: {
-              maxWidth: '100%',
-              width: 'min-content',
-            },
-          },
-        }}
-      />
+      <Textarea {...field} {...props} />
       {meta.touched && meta.error ? (
         <div
           className={css({

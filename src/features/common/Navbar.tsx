@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
-import { useStyletron, styled } from 'baseui';
+import { useStyletron } from 'baseui';
 import { useAppDispatch } from '../../app/hooks';
 import { logoutUser } from '../auth/authSlice';
 import { AppNavBar, setItemActive, NavItemT } from 'baseui/app-nav-bar';
 import { ChevronRight, Delete, Overflow } from 'baseui/icon';
 import { useTranslation } from 'react-i18next';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { authSelector } from '../auth/authSlice';
 
@@ -79,7 +79,7 @@ const NavBar = () => {
         { icon: Overflow, label: t('Logout'), info: { clickAction: 'logout' } },
       ];
     } else {
-      return [{ icon: Overflow, label: t('Log In') }];
+      return [{ icon: Overflow, label: t('Log In'), info: { linkTo: '/' } }];
     }
   }, [isAuthenticated, t]);
 

@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { userSelector } from '../user/userSlice';
 import {
   recipeSelector,
-  getCountOfCategory,
+  loadFilteredMeta,
   loadWithFiltersPaginated,
 } from './recipeSlice';
 import RecipeCard from './RecipeCard';
@@ -32,7 +32,6 @@ export const RecipeCategory = (props: any) => {
   const dispatch = useAppDispatch();
   const [css] = useStyletron();
   const { t } = useTranslation();
-  const { families } = useAppSelector(userSelector);
   const { currentFamily } = useContext(CurrentFamilyContext);
   const { recipesLoading, recipeList, filteredCount } =
     useAppSelector(recipeSelector);
@@ -98,7 +97,7 @@ export const RecipeCategory = (props: any) => {
   useEffect(() => {
     if (currentFamily) {
       dispatch(
-        getCountOfCategory({
+        loadFilteredMeta({
           filterObject: filtersObj,
           family: currentFamily.id,
           category: category.slice(0, -1),

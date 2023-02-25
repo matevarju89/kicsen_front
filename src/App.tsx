@@ -7,6 +7,7 @@ import ProtectedRoute from './features/common/ProtectedRoute';
 import Navbar from './features/common/Navbar';
 import { RecipesDist } from './features/recipes/recipesDist';
 import ScrollToTop from './features/common/ScrollToTop';
+import About from './features/common/About';
 
 const User = react.lazy(() => import('./features/user/user'));
 
@@ -19,6 +20,9 @@ function App() {
         <Switch>
           <Route exact path='/'>
             <Login />
+          </Route>
+          <Route exact path='/about'>
+            <About />
           </Route>
           <Route
             path='/recipes'

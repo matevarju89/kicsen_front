@@ -11,9 +11,9 @@ import FormInput from '../common/FormInput';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { useTranslation } from 'react-i18next';
 import SelectInput from '../common/SelectInput';
-import TextArea from '../common/TextArea';
 import IngredientInputGroup from '../common/IngredientInputGroup';
 import { userSelector } from '../user/userSlice';
+import NumberInput from '../common/NumberInput';
 import {
   clearRecipeDetailState,
   loadRecipe,
@@ -23,7 +23,7 @@ import {
 import { RecipePayloadData } from './recipeAdd';
 import {
   clearSmartTagListState,
-  loadAllSmartTagsByLang,
+  loadAllSmartTags,
   smartTagSelector,
 } from '../smartTag/smartTagSlice';
 import {
@@ -35,7 +35,6 @@ import {
 } from './recipeAdd';
 import UploadModal from '../common/UploadModal';
 import QuillEditor from '../common/QuillEditor';
-import { Quill } from 'react-quill';
 import NoEdit from './NoEdit';
 
 const RecipeEdit = () => {
@@ -59,12 +58,15 @@ const RecipeEdit = () => {
   );
 
   useEffect(() => {
-    const q_lang = lang.charAt(0).toUpperCase() + lang.slice(1);
-    dispatch(loadAllSmartTagsByLang(q_lang));
-    return () => {
-      dispatch(clearSmartTagListState());
-    };
-  }, [lang]);
+    if (ownFamily) {
+      //const q_lang = lang.charAt(0).toUpperCase() + lang.slice(1);
+      //dispatch(loadAllSmartTagsByLang(q_lang));
+      dispatch(loadAllSmartTags(ownFamily.id));
+      return () => {
+        dispatch(clearSmartTagListState());
+      };
+    }
+  }, [ownFamily]);
 
   useEffect(() => {
     dispatch(loadRecipe(id));
@@ -102,6 +104,7 @@ const RecipeEdit = () => {
     ingredients: recipeDetail?.ingredients ? recipeDetail.ingredients : '',
     title: recipeDetail?.title ? recipeDetail.title : '',
     family: recipeDetail?.family ? recipeDetail.family : { id: '' },
+    forHowMany: recipeDetail?.forHowMany ? recipeDetail.forHowMany : 0,
   };
   return (
     <NoEdit>
@@ -131,6 +134,7 @@ const RecipeEdit = () => {
               .string()
               .max(500, t('Description should be max 500 characters'))
               .required(t('Description is required')),
+            forHowMany: yup.number(),
             ingredients: yup.string().required(t('Ingredients are required')),
           })}
           onSubmit={(values, actions) => {
@@ -145,8 +149,10 @@ const RecipeEdit = () => {
                   dispatchUpload,
                   smartTagList,
                   lang,
-                  addedImage
+                  addedImage,
+                  ownFamily.id
                 );
+                if (!Array.isArray(smartTagUploadIDs)) return false;
                 setTimeout(async function () {
                   if (!uploadState.isError) {
                     if (addedImage) {
@@ -158,6 +164,7 @@ const RecipeEdit = () => {
                         addedImage,
                         dispatchUpload
                       );
+                      if (!Array.isArray(image)) return false;
                     } else if (
                       Array.isArray(recipeDetail?.images) &&
                       recipeDetail?.images.length
@@ -170,7 +177,7 @@ const RecipeEdit = () => {
                           type: 'initiateRecipeUpload',
                         });
                         try {
-                          await dispatch(
+                          const result = await dispatch(
                             updateRecipe({
                               recipe: {
                                 ...values,
@@ -180,12 +187,18 @@ const RecipeEdit = () => {
                               id,
                             })
                           );
-                          setTimeout(() => {
-                            dispatchUpload({ type: 'set_success' });
-                          }, 1000);
-                          setTimeout(() => {
-                            history.push(`/recipes/detail/${id}`);
-                          }, 2000);
+                          if (!result.type.includes('rejected')) {
+                            setTimeout(() => {
+                              dispatchUpload({ type: 'set_success' });
+                            }, 1000);
+                            setTimeout(() => {
+                              history.push(`/recipes/detail/${id}`);
+                            }, 2000);
+                          } else {
+                            setTimeout(() => {
+                              dispatchUpload({ type: 'set_error' });
+                            }, 1000);
+                          }
                         } catch (e) {
                           setTimeout(() => {
                             dispatchUpload({ type: 'set_error' });
@@ -275,6 +288,18 @@ const RecipeEdit = () => {
                   valueKey='difficulty'
                   multi={false}
                 />
+                <NumberInput
+                  id='forHowMany'
+                  name='forHowMany'
+                  initialValue={
+                    initialValues.forHowMany
+                      ? initialValues.forHowMany
+                      : undefined
+                  }
+                  placeholder={t('For how many servings? (optional)')}
+                  clearOnEscape
+                  overrides={{ Root: { style: { marginTop: '20px' } } }}
+                />
                 <p
                   className={css({
                     fontWeight: 'bold',
@@ -302,7 +327,14 @@ const RecipeEdit = () => {
                 clearOnEscape={false}
               />*/}
                 <QuillEditor name='description' id='description' />
-
+                <p
+                  className={css({
+                    fontWeight: 'bold',
+                    marginTop: '30px',
+                  })}
+                >
+                  {t('Upload a photo (optional, max 1 MB)')}
+                </p>
                 <FileUploader
                   /*disabled={imageAdded}*/
                   errorMessage={imgErrorMessage}

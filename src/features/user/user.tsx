@@ -15,7 +15,6 @@ const User = () => {
   const { t } = useTranslation();
   const [css] = useStyletron();
   const userData = useAppSelector(userSelector);
-  const cookies = new Cookies();
   const history = useHistory();
   const { currentFamily, setCurrentFamily } = useContext(CurrentFamilyContext);
   const setLanguage = () => {
