@@ -14,14 +14,14 @@ import { smartTagSelector } from '../smartTag/smartTagSlice';
 import { FilterContext as Filtercontext_All } from './recipeAll';
 import { FilterContext as Filtercontext_Category } from './recipeCategory';
 import {
-  loadAllSmartTagsByLang,
+  loadAllSmartTags,
   clearSmartTagListState,
 } from '../smartTag/smartTagSlice';
 import { t } from 'i18next';
 import { useStyletron } from 'baseui';
-import { ChevronUp, ChevronDown, Icon } from 'baseui/icon';
+import { ChevronUp, ChevronDown } from 'baseui/icon';
 import { recipeSelector } from './recipeSlice';
-import { userSelector } from '../user/userSlice';
+import { CurrentFamilyContext } from '../common/Layout';
 
 const flexItemProps: BlockProps = {
   display: 'flex',
@@ -470,10 +470,11 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
     : Filtercontext_All;
   const { smartTagList } = useAppSelector(smartTagSelector);
   const { current_smarttag_list } = useAppSelector(recipeSelector);
-  const { lang } = useAppSelector(userSelector);
+  /*const { lang } = useAppSelector(userSelector);
   const current_smarttag_list_in_lang = current_smarttag_list.filter(
     (tag) => tag.lang === lang
-  );
+  );*/
+  const { currentFamily } = React.useContext(CurrentFamilyContext);
   /*let currentIndex =
     smartTagList.length && typeof currentSmartTag === 'string'
       ? smartTagList.findIndex((tag) => {
@@ -493,11 +494,14 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
   const { filtersObj, setFiltersObj } = React.useContext(currentContext);
   const dispatch = useAppDispatch();
   React.useEffect(() => {
-    dispatch(loadAllSmartTagsByLang(lang));
-    return () => {
-      dispatch(clearSmartTagListState());
-    };
-  }, []);
+    if (currentFamily) {
+      //dispatch(loadAllSmartTagsByLang(lang));
+      dispatch(loadAllSmartTags(currentFamily.id));
+      return () => {
+        dispatch(clearSmartTagListState());
+      };
+    }
+  }, [currentFamily]);
 
   const setNewSMartTagFilter = (name: string | null): void => {
     const newFilterPortion =
@@ -667,10 +671,7 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
             shape={SHAPE.pill}
             selected={selected}
             onClick={(_event, index) => {
-              if (
-                index === 7 ||
-                index === current_smarttag_list_in_lang.length + 1
-              )
+              if (index === 7 || index === current_smarttag_list.length + 1)
                 return false;
               setSelected(index);
             }}
@@ -684,7 +685,7 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
               },
             }}
           >
-            {current_smarttag_list_in_lang.slice(0, 7).map((smartTag) => {
+            {current_smarttag_list.slice(0, 7).map((smartTag) => {
               return (
                 <Button
                   onClick={(e) => {
@@ -706,7 +707,7 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
                 </Button>
               );
             })}
-            {current_smarttag_list_in_lang.length > 7 && !smartTagsExpanded && (
+            {current_smarttag_list.length > 7 && !smartTagsExpanded && (
               <Button
                 kind={KIND.tertiary}
                 overrides={{
@@ -725,9 +726,9 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
                 {t('Show all...')}
               </Button>
             )}
-            {current_smarttag_list_in_lang.length > 7 &&
+            {current_smarttag_list.length > 7 &&
               smartTagsExpanded &&
-              current_smarttag_list_in_lang.slice(7).map((smartTag) => {
+              current_smarttag_list.slice(7).map((smartTag) => {
                 return (
                   <Button
                     onClick={(e) => {
@@ -749,7 +750,7 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
                   </Button>
                 );
               })}
-            {current_smarttag_list_in_lang.length > 7 && smartTagsExpanded && (
+            {current_smarttag_list.length > 7 && smartTagsExpanded && (
               <Button
                 kind={KIND.tertiary}
                 overrides={{
@@ -777,10 +778,7 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
             shape={SHAPE.pill}
             selected={0}
             onClick={(_event, index) => {
-              if (
-                index === 7 ||
-                index === current_smarttag_list_in_lang.length + 1
-              )
+              if (index === 7 || index === current_smarttag_list.length + 1)
                 return false;
               setSelected(index);
             }}
@@ -809,12 +807,12 @@ const SmartTagSection = ({ isCategoryGiven }: { isCategoryGiven: boolean }) => {
                 },
               }}
             >
-              {current_smarttag_list_in_lang.length &&
+              {current_smarttag_list.length &&
               currentSmartTag &&
-              current_smarttag_list_in_lang.filter((tag) => {
+              current_smarttag_list.filter((tag) => {
                 return tag.name.toLowerCase() === currentSmartTag;
               }).length
-                ? current_smarttag_list_in_lang.filter((tag) => {
+                ? current_smarttag_list.filter((tag) => {
                     return tag.name.toLowerCase() === currentSmartTag;
                   })[0].name
                 : typeof currentSmartTag === 'string'

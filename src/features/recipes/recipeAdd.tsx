@@ -10,12 +10,11 @@ import FormInput from '../common/FormInput';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { useTranslation } from 'react-i18next';
 import SelectInput from '../common/SelectInput';
-import TextArea from '../common/TextArea';
 import IngredientInputGroup from '../common/IngredientInputGroup';
 import { userSelector } from '../user/userSlice';
 import {
   clearSmartTagListState,
-  loadAllSmartTagsByLang,
+  loadAllSmartTags,
   smartTagSelector,
   uploadSmartTags,
 } from '../smartTag/smartTagSlice';
@@ -24,9 +23,9 @@ import ImageUploadService from '../images/uploadAPI';
 import UploadModal from '../common/UploadModal';
 import QuillEditor from '../common/QuillEditor';
 import { SmartTagData } from '../smartTag/types';
-import { Quill } from 'react-quill';
 import NoEdit from './NoEdit';
 import { useHistory } from 'react-router-dom';
+import NumberInput from '../common/NumberInput';
 
 export type RecipePayloadData = {
   category1: 'appetizer' | 'soup' | 'main' | 'dessert';
@@ -40,6 +39,7 @@ export type RecipePayloadData = {
   ingredients: string;
   title: string;
   family: { id: string };
+  forHowMany: number | null;
   smartTags?:
     | Array<string>
     | { connect: Array<{ id: string }> }
@@ -63,6 +63,7 @@ const initialValues: RecipePayloadData = {
   family: { id: '' },
   smartTags: [],
   images: [],
+  forHowMany: null,
 };
 export interface IUploadState {
   isUploadModalShown: boolean;
@@ -163,7 +164,8 @@ export const addSmartTags = async (
   dispatchUpload: any,
   smartTagList: Array<SmartTagData>,
   lang: any,
-  addedImage: any
+  addedImage: any,
+  familyId: string
 ) => {
   let smartTagUploadIDs: Array<{ id: string }> = [];
   const smartTagOptions = smartTagList.map((smartTag) => {
@@ -198,6 +200,7 @@ export const addSmartTags = async (
       return {
         name: tag.charAt(0).toUpperCase() + tag.slice(1),
         lang: lang,
+        familyId: familyId,
       };
     });
     if (smartTagsToUpload.length) {
@@ -215,7 +218,7 @@ export const addSmartTags = async (
         return false;
       }
       const getFreshSmartTagResponse = await dispatch(
-        loadAllSmartTagsByLang(lang)
+        loadAllSmartTags(familyId)
       );
       if (Array.isArray(getFreshSmartTagResponse.payload)) {
         const smartTagList_fresh = getFreshSmartTagResponse.payload;
@@ -288,12 +291,13 @@ const RecipeAdd = () => {
   const [addedImage, setAddedImage] = useState<any>(null);
   const contextValue = { uploadState, dispatchUpload };
   useEffect(() => {
-    const q_lang = lang.charAt(0).toUpperCase() + lang.slice(1);
-    dispatch(loadAllSmartTagsByLang(q_lang));
-    return () => {
-      dispatch(clearSmartTagListState());
-    };
-  }, [lang]);
+    if (ownFamily) {
+      dispatch(loadAllSmartTags(ownFamily.id));
+      return () => {
+        dispatch(clearSmartTagListState());
+      };
+    }
+  }, [ownFamily]);
 
   const smartTagOptions = smartTagList.map((smartTag) => {
     return {
@@ -343,10 +347,10 @@ const RecipeAdd = () => {
               .string()
               .max(500, t('Description should be max 500 characters'))
               .required(t('Description is required')),
+            forHowMany: yup.number(),
             ingredients: yup.string().required(t('Ingredients are required')),
           })}
           onSubmit={async (values, actions) => {
-            //setTimeout(async () => {
             if (ownFamily) {
               values.family = { id: ownFamily.id };
               let image: any = [];
@@ -357,7 +361,8 @@ const RecipeAdd = () => {
                 dispatchUpload,
                 smartTagList,
                 lang,
-                addedImage
+                addedImage,
+                ownFamily.id
               );
               if (!Array.isArray(smartTagUploadIDs)) return false;
               setTimeout(async function () {
@@ -406,7 +411,6 @@ const RecipeAdd = () => {
             } else {
               alert('Error: Family is not detectable');
             }
-            //}, 1000);
           }}
         >
           {(props: FormikProps<RecipePayloadData>) => (
@@ -477,7 +481,7 @@ const RecipeAdd = () => {
                 creatable
                 maxDropdownHeight='200px'
                 options={smartTagOptions}
-                placeholder={t('Select smart tags')}
+                placeholder={t('Select smart tags (optional)')}
                 valueKey='smartTags'
                 multi={true}
               />
@@ -491,6 +495,13 @@ const RecipeAdd = () => {
                 placeholder={t('Choose difficulty')}
                 valueKey='difficulty'
                 multi={false}
+              />
+              <NumberInput
+                id='forHowMany'
+                name='forHowMany'
+                placeholder={t('For how many servings? (optional)')}
+                clearOnEscape
+                overrides={{ Root: { style: { marginTop: '20px' } } }}
               />
               <p
                 className={css({
@@ -510,9 +521,15 @@ const RecipeAdd = () => {
                 {t('How is it made?')}
               </p>
               <QuillEditor id='description' name='description' />
-
+              <p
+                className={css({
+                  fontWeight: 'bold',
+                  marginTop: '30px',
+                })}
+              >
+                {t('Upload a photo (optional, max 1 MB)')}
+              </p>
               <FileUploader
-                /*disabled={imageAdded}*/
                 errorMessage={imgErrorMessage}
                 maxSize={1000000}
                 accept='.png, .jpg, .jpeg'

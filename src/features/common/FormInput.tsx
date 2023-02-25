@@ -8,6 +8,7 @@ interface IFormFieldProps {
   type: string;
   placeholder: string;
   clearOnEscape: boolean;
+  overrides?: any;
 }
 
 const FormInput = (props: IFormFieldProps) => {

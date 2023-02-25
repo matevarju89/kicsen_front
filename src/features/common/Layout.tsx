@@ -4,16 +4,10 @@ import { useStyletron } from 'baseui';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { loadUserBase, userSelector } from '../user/userSlice';
 import { authSelector } from '../auth/authSlice';
-import Cookies from 'universal-cookie';
 import { FamilyData } from '../user/types';
 export interface LayoutProps {
   children: React.ReactNode;
 }
-
-/*const cookies = new Cookies();
-const currentFamilyFromCookie = cookies.get('cur_fam')
-  ? cookies.get('cur_fam')
-  : null;*/
 
 const currentFamily_from_storage = window.localStorage.getItem('cur_fam')
   ? (window.localStorage.getItem('cur_fam') as string)
@@ -34,7 +28,7 @@ const Layout = (props: LayoutProps) => {
   const [css, theme] = useStyletron();
   const dispatch = useAppDispatch();
   const { username } = useAppSelector(authSelector);
-  const { families, ownFamily } = useAppSelector(userSelector);
+  const { families } = useAppSelector(userSelector);
   const [currentFamily, setCurrentFamily] = React.useState<FamilyData | null>(
     null
   );

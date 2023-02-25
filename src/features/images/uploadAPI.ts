@@ -1,4 +1,3 @@
-// request all users
 import api from '../../utility/http-common';
 
 class ImageUploadService {

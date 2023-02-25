@@ -3,6 +3,7 @@ import http from '../../utility/http-common';
 import { RecipeData } from './types';
 import { RecipePayloadData } from './recipeAdd';
 import qs from 'qs';
+import { SmartTagData } from '../smartTag/types';
 
 export const recipeCategories = ['appetizer', 'soup', 'main', 'dessert'];
 
@@ -48,16 +49,12 @@ class RecipeDataService {
     );
   }
 
-  getRecipeCountOfCategory(
-    filterObject: any,
-    category: string,
-    family: string
-  ) {
+  getFilteredMeta(filterObject: any, category: string, family: string) {
     const queryObj = {
       where: filterObject,
     };
     const stringFilterObj = qs.stringify(queryObj);
-    return http.get<Number>(
+    return http.get<{ count: number; smartTags: Array<SmartTagData> }>(
       `/families/${family}/countRecipes?${stringFilterObj}`
     );
   }

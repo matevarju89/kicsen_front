@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { userSelector } from '../user/userSlice';
 import {
   recipeSelector,
-  getCountOfCategory,
+  loadFilteredMeta,
   loadWithFiltersPaginated,
 } from './recipeSlice';
 import RecipeCard from './RecipeCard';
@@ -31,7 +31,6 @@ export const RecipeAll = () => {
   const dispatch = useAppDispatch();
   const [css] = useStyletron();
   const { t } = useTranslation();
-  const { families } = useAppSelector(userSelector);
   const { recipesLoading, recipeList, filteredCount } =
     useAppSelector(recipeSelector);
   const history = useHistory();
@@ -49,7 +48,6 @@ export const RecipeAll = () => {
     typeof category1 === 'string' && category1.length
       ? { in: category1.split('+') }
       : { in: ['appetizer', 'soup', 'main', 'dessert'] };
-  //console.log(category1FilterPortion, typeof category1, category1?.length);
   const category2FilterPortion: {} =
     typeof category2 === 'string' && category2.length
       ? { in: category2.split('+') }
@@ -120,7 +118,7 @@ export const RecipeAll = () => {
         });
       }
       dispatch(
-        getCountOfCategory({
+        loadFilteredMeta({
           filterObject: filtersObj,
           family: currentFamily.id,
           category: queryParams.category1,

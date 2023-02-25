@@ -7,13 +7,11 @@ import { RecipeCategory } from './recipeCategory';
 import { RecipeAll } from './recipeAll';
 import { RecipeDetail } from './recipeDetail';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { loadUserBase, userSelector } from '../user/userSlice';
-import { authSelector } from '../auth/authSlice';
+import { userSelector } from '../user/userSlice';
 import { Avatar } from 'baseui/avatar';
 import { Spinner } from 'baseui/spinner';
 import RecipeAdd from './recipeAdd';
 import RecipeEdit from './recipeEdit';
-import Cookies from 'universal-cookie';
 import { CurrentFamilyContext } from '../common/Layout';
 
 export const RecipesDist = () => {
@@ -24,11 +22,7 @@ export const RecipesDist = () => {
   const history = useHistory();
 
   const { currentFamily } = useContext(CurrentFamilyContext);
-  //const { username } = useAppSelector(authSelector);
   const { families, username } = useAppSelector(userSelector);
-  /*useEffect(() => {
-    dispatch(loadUserBase(username));
-  }, [username]);*/
   return (
     <>
       {families?.length ? (

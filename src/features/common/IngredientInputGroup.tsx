@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useField } from 'formik';
 import { useStyletron } from 'baseui';
 import { FormControl } from 'baseui/form-control';

@@ -4,7 +4,6 @@ import { RecipeData } from './types';
 import recipeAPI, { recipeCategories } from './recipeApi';
 import { RecipePayloadData } from './recipeAdd';
 import { SmartTagData } from '../smartTag/types';
-import { RecipesDist } from './recipesDist';
 
 interface IRecipeListState {
   count: number;
@@ -120,16 +119,16 @@ export const loadWithFiltersPaginated = createAsyncThunk(
   }
 );
 
-export const getCountOfCategory = createAsyncThunk(
-  'recipes/getCountOfCategory',
+export const loadFilteredMeta = createAsyncThunk(
+  'recipes/getFilteredMeta',
   async (arg: any) => {
-    const response = await recipeAPI.getRecipeCountOfCategory(
+    const response = await recipeAPI.getFilteredMeta(
       arg.filterObject,
       arg.category,
       arg.family
     );
     if (response.status === 200) {
-      return response.data as number;
+      return response.data;
     }
   }
 );
@@ -158,8 +157,10 @@ export const recipeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getCountOfCategory.fulfilled, (state, { payload }) => {
-        state.filteredCount = payload ? payload : 0;
+      .addCase(loadFilteredMeta.fulfilled, (state, { payload }) => {
+        state.filteredCount = payload?.count ? payload.count : 0;
+        state.current_smarttag_list =
+          typeof payload?.smartTags !== 'undefined' ? payload?.smartTags : [];
         return state;
       })
       .addCase(loadAllRecipes.fulfilled, (state, { payload }) => {
@@ -203,23 +204,6 @@ export const recipeSlice = createSlice({
       })
       .addCase(loadWithFiltersPaginated.fulfilled, (state, { payload }) => {
         state.recipeList = [...(payload as RecipeData[])];
-        let smartTagArray: Array<SmartTagData> = [];
-
-        [...(payload as RecipeData[])]
-          .filter((recipe) => typeof recipe.smartTags !== 'undefined')
-          .map((recipe) => {
-            return recipe.smartTags;
-          })
-          .forEach((smartTags) => {
-            if (Array.isArray(smartTags)) {
-              smartTagArray.push(...smartTags);
-            }
-          });
-        state.current_smarttag_list = smartTagArray.filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex((t) => t.id === value.id && t.name === value.name)
-        );
         state.recipesLoading = false;
         state.count = payload ? payload.length : 0;
         state.recipesError = '';

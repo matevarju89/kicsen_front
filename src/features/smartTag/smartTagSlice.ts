@@ -19,8 +19,8 @@ const initialState: ISmartTagsListState = {
 
 export const loadAllSmartTags = createAsyncThunk(
   'smartTags/getall',
-  async () => {
-    const response = (await smartTagAPI.getAll()) as any;
+  async (family: string) => {
+    const response = (await smartTagAPI.getAll(family)) as any;
     if (response.status === 200) {
       return response.data as SmartTagData[];
     }

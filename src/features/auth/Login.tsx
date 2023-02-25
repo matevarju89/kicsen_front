@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import * as yup from 'yup';
 import { useHistory } from 'react-router-dom';
 import { Formik, FormikProps, Form } from 'formik';
@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { loginUser, authSelector, clearState } from './authSlice';
 import { AuthPayloadData } from './types';
-import { Redirect } from 'react-router';
 import FormInput from '../common/FormInput';
 
 const initialValues: AuthPayloadData = {
@@ -38,13 +37,10 @@ const Login = () => {
     }
     if (isSuccess) {
       dispatch(clearState());
-      //history.push('/recipes');
-      //window.location.pathname = '/recipes';
     }
   }, [isError, isSuccess, dispatch, t, history]);
   if (isAuthenticated) {
     window.location.pathname = '/recipes';
-    //return <Redirect to='/recipes' />;
   }
   return (
     <div

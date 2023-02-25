@@ -98,7 +98,7 @@
       "Switch to Hungarian": "Váltás angolra",
       "Current language": "Jelenlegi nyelv",
       "English": "Magyar",
-      "Select smart tags": "Adj hozzá tulajdonságokat",
+      "Select smart tags (optional)": "Adj hozzá tulajdonságokat (opcionális)",
       "Uploading smart tags": "Tulajdonságok feltöltése",
       "Uploading images": "Fényképek feltöltése",
       "Uploading recipe": "Recept véglegesítése",
@@ -114,7 +114,17 @@
       "Or use a smart tag to find what your are looking for": "Vagy használd az elérhető tulajdonságok egyikét",
       "Congrats, the recipe has been uploaded": "Köszönjük, a recept feltöltésre került",
       "Sorry, you can add or edit recipes only in your own family": "Csak a saját családodban addhatsz hozzá vagy módosíthatsz recepteket.",
-      "Change family settings": "A család beállításokhoz"
+      "Change family settings": "A család beállításokhoz",
+      "serving": "főre",
+      "servings": "főre",
+      "Ratings": "Értékelések",
+      "Add rating": "Értékelés hozzáadása",
+      "Upload a photo (optional, max 1 MB)": "Tölts fel egy képet (opcionális, max 1 MB)",
+      "For how many servings? (optional)": "Hány főre? (opcionális)",
+      "The star rating is required": "A csillagok megadása kötelező",
+      "Write your comment here": "Írd ide a kommentedet",
+      "The comment is too long": "A komment túl hosszú",
+      "Sending failed": "A küldés sikertelen"
     }
   }
 }
