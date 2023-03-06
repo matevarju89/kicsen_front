@@ -115,104 +115,67 @@ const SearchBox = (props: any) => {
           </Button>
         </div>
       </div>
-      <p
-        className={css({
-          color: 'mono700',
-          marginBottom: '15px',
-          textAlign: 'center',
-          marginTop: '0',
-        })}
-      >
-        {t('Or use a smart tag to find what your are looking for')}
-      </p>
-      <div
-        className={css({
-          textAlign: 'center',
-        })}
-      >
-        {smartTagList.slice(0, 10).map((smartTag) => {
-          return (
-            <Button
-              onClick={() => {
-                const newQueryFragment = qs.stringify({
-                  smarttag:
-                    typeof smartTag.name === 'string'
-                      ? smartTag.name.toLowerCase()
-                      : '',
-                });
-                history.push(`/recipes/all?${newQueryFragment}`);
-              }}
-              key={smartTag.name}
-              size={SIZE.compact}
-              shape={SHAPE.pill}
-              overrides={{
-                Root: {
-                  style: ({ $theme }) => ({
-                    marginRight: '10px',
-                    marginBottom: '5px',
-                    fontSize: '12px',
-                    lineHeight: '14px',
-                    [$theme.mediaQuery.medium]: {
-                      fontSize: '14px',
-                      lineHeight: '16px',
-                      marginBottom: '10px',
-                    },
-                  }),
-                },
-              }}
-            >
-              {smartTag.name}
-            </Button>
-          );
-        })}
-        {smartTagList.length > 7 && !smartTagsExpanded && (
-          <Button
-            kind={KIND.tertiary}
-            overrides={{
-              BaseButton: {
-                style: ({ $theme }) => ({
-                  marginRight: '10px',
-                  marginBottom: '5px',
-                  backgroundColor: 'transparent',
-                  fontSize: '12px',
-                  lineHeight: '14px',
-                  [$theme.mediaQuery.medium]: {
-                    fontSize: '14px',
-                    lineHeight: '16px',
-                    marginBottom: '10px',
-                  },
-                }),
-              },
-            }}
-            onClick={() => {
-              setSmartTagsExpanded(true);
-            }}
+      {smartTagList.length && (
+        <>
+          <p
+            className={css({
+              color: 'mono700',
+              marginBottom: '15px',
+              textAlign: 'center',
+              marginTop: '0',
+            })}
           >
-            {t('Show all...')}
-          </Button>
-        )}
-        {smartTagList.length > 7 &&
-          smartTagsExpanded &&
-          smartTagList.slice(7).map((smartTag) => {
-            return (
+            {t('Or use a smart tag to find what your are looking for')}
+          </p>
+          <div
+            className={css({
+              textAlign: 'center',
+            })}
+          >
+            {smartTagList.slice(0, 10).map((smartTag) => {
+              return (
+                <Button
+                  onClick={() => {
+                    const newQueryFragment = qs.stringify({
+                      smarttag:
+                        typeof smartTag.name === 'string'
+                          ? smartTag.name.toLowerCase()
+                          : '',
+                    });
+                    history.push(`/recipes/all?${newQueryFragment}`);
+                  }}
+                  key={smartTag.name}
+                  size={SIZE.compact}
+                  shape={SHAPE.pill}
+                  overrides={{
+                    Root: {
+                      style: ({ $theme }) => ({
+                        marginRight: '10px',
+                        marginBottom: '5px',
+                        fontSize: '12px',
+                        lineHeight: '14px',
+                        [$theme.mediaQuery.medium]: {
+                          fontSize: '14px',
+                          lineHeight: '16px',
+                          marginBottom: '10px',
+                        },
+                      }),
+                    },
+                  }}
+                >
+                  {smartTag.name}
+                </Button>
+              );
+            })}
+            {smartTagList.length > 7 && !smartTagsExpanded && (
               <Button
-                onClick={() => {
-                  const newQueryFragment = qs.stringify({
-                    smarttag:
-                      typeof smartTag.name === 'string'
-                        ? smartTag.name.toLowerCase()
-                        : '',
-                  });
-                  history.push(`/recipes/all?${newQueryFragment}`);
-                }}
-                key={smartTag.name}
-                size={SIZE.compact}
-                shape={SHAPE.pill}
+                kind={KIND.tertiary}
                 overrides={{
-                  Root: {
+                  BaseButton: {
                     style: ({ $theme }) => ({
                       marginRight: '10px',
                       marginBottom: '5px',
+                      backgroundColor: 'transparent',
                       fontSize: '12px',
                       lineHeight: '14px',
                       [$theme.mediaQuery.medium]: {
@@ -223,38 +186,79 @@ const SearchBox = (props: any) => {
                     }),
                   },
                 }}
+                onClick={() => {
+                  setSmartTagsExpanded(true);
+                }}
               >
-                {smartTag.name}
+                {t('Show all...')}
               </Button>
-            );
-          })}
-        {smartTagList.length > 7 && smartTagsExpanded && (
-          <Button
-            kind={KIND.tertiary}
-            overrides={{
-              BaseButton: {
-                style: ({ $theme }) => ({
-                  marginRight: '10px',
-                  marginBottom: '5px',
-                  backgroundColor: 'transparent',
-                  fontSize: '12px',
-                  lineHeight: '14px',
-                  [$theme.mediaQuery.medium]: {
-                    fontSize: '14px',
-                    lineHeight: '16px',
-                    marginBottom: '10px',
+            )}
+            {smartTagList.length > 7 &&
+              smartTagsExpanded &&
+              smartTagList.slice(7).map((smartTag) => {
+                return (
+                  <Button
+                    onClick={() => {
+                      const newQueryFragment = qs.stringify({
+                        smarttag:
+                          typeof smartTag.name === 'string'
+                            ? smartTag.name.toLowerCase()
+                            : '',
+                      });
+                      history.push(`/recipes/all?${newQueryFragment}`);
+                    }}
+                    key={smartTag.name}
+                    size={SIZE.compact}
+                    shape={SHAPE.pill}
+                    overrides={{
+                      Root: {
+                        style: ({ $theme }) => ({
+                          marginRight: '10px',
+                          marginBottom: '5px',
+                          fontSize: '12px',
+                          lineHeight: '14px',
+                          [$theme.mediaQuery.medium]: {
+                            fontSize: '14px',
+                            lineHeight: '16px',
+                            marginBottom: '10px',
+                          },
+                        }),
+                      },
+                    }}
+                  >
+                    {smartTag.name}
+                  </Button>
+                );
+              })}
+            {smartTagList.length > 7 && smartTagsExpanded && (
+              <Button
+                kind={KIND.tertiary}
+                overrides={{
+                  BaseButton: {
+                    style: ({ $theme }) => ({
+                      marginRight: '10px',
+                      marginBottom: '5px',
+                      backgroundColor: 'transparent',
+                      fontSize: '12px',
+                      lineHeight: '14px',
+                      [$theme.mediaQuery.medium]: {
+                        fontSize: '14px',
+                        lineHeight: '16px',
+                        marginBottom: '10px',
+                      },
+                    }),
                   },
-                }),
-              },
-            }}
-            onClick={() => {
-              setSmartTagsExpanded(false);
-            }}
-          >
-            {t('...Show less')}
-          </Button>
-        )}
-      </div>
+                }}
+                onClick={() => {
+                  setSmartTagsExpanded(false);
+                }}
+              >
+                {t('...Show less')}
+              </Button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
