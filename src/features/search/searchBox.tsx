@@ -115,7 +115,7 @@ const SearchBox = (props: any) => {
           </Button>
         </div>
       </div>
-      {smartTagList.length && (
+      {smartTagList.length > 0 ? (
         <>
           <p
             className={css({
@@ -258,6 +258,8 @@ const SearchBox = (props: any) => {
             )}
           </div>
         </>
+      ) : (
+        ''
       )}
     </div>
   );

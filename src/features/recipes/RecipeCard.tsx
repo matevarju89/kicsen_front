@@ -97,7 +97,7 @@ const RecipeCard = ({ recipe, recipeLoading }: IRecipeCardProps) => {
       <div className={css({ padding: '15px' })}>
         <h2
           className={css({
-            margin: '10px 0 0',
+            margin: '0',
             fontSize: '15px',
             lineHeight: '18px',
             height: '36px',
