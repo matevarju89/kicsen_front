@@ -61,55 +61,57 @@ const User = () => {
               </strong>
             </span>
           </p>
-          <p className={css({ display: 'flex' })}>
-            <span className={css({ marginRight: '10px' })}>
+          <p className={css({ display: 'flex', flexDirection: 'column' })}>
+            <div className={css({ marginRight: '10px', marginBottom: '10px' })}>
               {t('Change Family')}:
-            </span>
-            {userData.families.length > 1 ? (
-              userData.families
-                ?.filter((fam) => fam.id !== currentFamily?.id)
-                .map((fam) => {
-                  const isOwnFam =
-                    fam.id === userData.ownFamily?.id
-                      ? () => {
-                          if (fam.id === userData.ownFamily?.id) {
-                            return (
-                              <img
-                                width='12px'
-                                height='12px'
-                                src='/home.svg'
-                                alt='home icon'
-                              />
-                            );
+            </div>
+            <div className={css({ display: 'flex' })}>
+              {userData.families.length > 1 ? (
+                userData.families
+                  ?.filter((fam) => fam.id !== currentFamily?.id)
+                  .map((fam) => {
+                    const isOwnFam =
+                      fam.id === userData.ownFamily?.id
+                        ? () => {
+                            if (fam.id === userData.ownFamily?.id) {
+                              return (
+                                <img
+                                  width='12px'
+                                  height='12px'
+                                  src='/home.svg'
+                                  alt='home icon'
+                                />
+                              );
+                            }
                           }
-                        }
-                      : null;
-                  return (
-                    <Button
-                      startEnhancer={isOwnFam}
-                      onClick={() => setFamily(fam)}
-                      kind={KIND.secondary}
-                      size={SIZE.mini}
-                      shape={SHAPE.pill}
-                      key={fam.id}
-                      overrides={{
-                        StartEnhancer: {
-                          style: {
-                            marginRight: '5px',
+                        : null;
+                    return (
+                      <Button
+                        startEnhancer={isOwnFam}
+                        onClick={() => setFamily(fam)}
+                        kind={KIND.secondary}
+                        size={SIZE.mini}
+                        shape={SHAPE.pill}
+                        key={fam.id}
+                        overrides={{
+                          StartEnhancer: {
+                            style: {
+                              marginRight: '5px',
+                            },
                           },
-                        },
-                        BaseButton: {
-                          style: { marginRight: '5px', marginBottom: '5px' },
-                        },
-                      }}
-                    >
-                      {`${fam.description} ${t('Family')}`}
-                    </Button>
-                  );
-                })
-            ) : (
-              <span>{t("You haven't been added to other families yet")}</span>
-            )}
+                          BaseButton: {
+                            style: { marginRight: '5px', marginBottom: '5px' },
+                          },
+                        }}
+                      >
+                        {`${fam.description} ${t('Family')}`}
+                      </Button>
+                    );
+                  })
+              ) : (
+                <span>{t("You haven't been added to other families yet")}</span>
+              )}
+            </div>
           </p>
         </>
       ) : (
