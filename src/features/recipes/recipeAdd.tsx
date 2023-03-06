@@ -26,6 +26,7 @@ import { SmartTagData } from '../smartTag/types';
 import NoEdit from './NoEdit';
 import { useHistory } from 'react-router-dom';
 import NumberInput from '../common/NumberInput';
+import { baseURL } from '../../utility/http-common';
 
 export type RecipePayloadData = {
   category1: 'appetizer' | 'soup' | 'main' | 'dessert';
@@ -254,7 +255,7 @@ export const addImage = async (
     const user = JSON.parse(localStorage.getItem('user') || '');
     try {
       const cloudinaryResponse = await axios.post(
-        'http://localhost:3000/api/images/upload',
+        baseURL + '/images/upload',
         formData,
         {
           headers: {
