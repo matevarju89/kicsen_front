@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { loadUserBase, userSelector } from '../user/userSlice';
 import { authSelector } from '../auth/authSlice';
 import { FamilyData } from '../user/types';
+import { useLocation } from 'react-router-dom';
 export interface LayoutProps {
   children: React.ReactNode;
 }
@@ -27,6 +28,7 @@ export const CurrentFamilyContext = React.createContext(
 const Layout = (props: LayoutProps) => {
   const [css, theme] = useStyletron();
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { username } = useAppSelector(authSelector);
   const { families } = useAppSelector(userSelector);
   const [currentFamily, setCurrentFamily] = React.useState<FamilyData | null>(
@@ -48,6 +50,11 @@ const Layout = (props: LayoutProps) => {
       setCurrentFamily(currentFam);
     }
   }, [families]);
+  const paddingTop = location.pathname.match(
+    /\/appetizers|\/soups|\/mains|\/desserts/
+  )
+    ? '120'
+    : '60';
   return (
     <CurrentFamilyContext.Provider value={{ currentFamily, setCurrentFamily }}>
       <Grid
@@ -55,6 +62,7 @@ const Layout = (props: LayoutProps) => {
           Grid: {
             style: {
               paddingBottom: '60px',
+              paddingTop: paddingTop + 'px',
             },
           },
         }}

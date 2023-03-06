@@ -98,7 +98,16 @@ const NavBar = () => {
   }, [isAuthenticated]);
 
   return (
-    <>
+    <div
+      className={css({
+        boxSizing: 'border-box',
+        position: 'fixed',
+        width: '100vw',
+        top: '0',
+        left: '0',
+        zIndex: '100',
+      })}
+    >
       <AppNavBar
         title={
           <a
@@ -140,7 +149,7 @@ const NavBar = () => {
           },
         }}
       />
-    </>
+    </div>
   );
 };
 
