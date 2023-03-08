@@ -536,7 +536,7 @@ const RecipeAdd = () => {
                 accept='.png, .jpg, .jpeg, .webp'
                 onDropRejected={() => {
                   setImgErrorMessage(
-                    t('Incorrect File Type(jpeg,jpg,png) or Size(max 1MB)')
+                    t('Incorrect File Type(jpeg,jpg,png) or Size(max 10MB)')
                   );
                 }}
                 onRetry={() => {
