@@ -50,11 +50,11 @@ const Layout = (props: LayoutProps) => {
       setCurrentFamily(currentFam);
     }
   }, [families]);
-  const paddingTop = location.pathname.match(
-    /\/appetizers|\/soups|\/mains|\/desserts/
-  )
-    ? '120'
-    : '60';
+  const paddingTop =
+    location.pathname.match(/\/appetizers|\/soups|\/mains|\/desserts/) &&
+    window.innerWidth >= 1136
+      ? '120'
+      : '60';
   return (
     <CurrentFamilyContext.Provider value={{ currentFamily, setCurrentFamily }}>
       <Grid

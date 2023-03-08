@@ -105,7 +105,7 @@ const NavBar = () => {
         width: '100vw',
         top: '0',
         left: '0',
-        zIndex: '100',
+        zIndex: '2',
       })}
     >
       <AppNavBar

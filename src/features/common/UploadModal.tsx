@@ -54,7 +54,7 @@ const UploadModal = (props: any) => {
         justifyContent='center'
         alignItems='center'
         flexDirection='column'
-        minWidth='300px'
+        width='300px'
         position='relative'
       >
         {uploadState.isSuccess && (
@@ -62,6 +62,7 @@ const UploadModal = (props: any) => {
             <h3
               className={css({
                 marginTop: '5px',
+                textAlign: 'center',
               })}
             >
               {t('Congrats, the recipe has been uploaded')}
@@ -75,7 +76,7 @@ const UploadModal = (props: any) => {
           <>
             <h3
               className={css({
-                arginTop: '5px',
+                marginTop: '5px',
               })}
             >
               {t('Uploading smart tags')}
@@ -86,7 +87,7 @@ const UploadModal = (props: any) => {
           <>
             <h3
               className={css({
-                arginTop: '5px',
+                marginTop: '5px',
               })}
             >
               {t('Uploading images')}
@@ -97,7 +98,7 @@ const UploadModal = (props: any) => {
           <>
             <h3
               className={css({
-                arginTop: '5px',
+                marginTop: '5px',
               })}
             >
               {t('Uploading recipe')}

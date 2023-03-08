@@ -346,7 +346,7 @@ const RecipeAdd = () => {
               .required(t('Choosing difficulty is required')),
             description: yup
               .string()
-              .max(500, t('Description should be max 500 characters'))
+              .max(10000, t('Description should be max 1000 characters'))
               .required(t('Description is required')),
             forHowMany: yup.number(),
             ingredients: yup.string().required(t('Ingredients are required')),
@@ -528,12 +528,12 @@ const RecipeAdd = () => {
                   marginTop: '30px',
                 })}
               >
-                {t('Upload a photo (optional, max 1 MB)')}
+                {t('Upload a photo (optional), max 10 MB')}
               </p>
               <FileUploader
                 errorMessage={imgErrorMessage}
-                maxSize={1000000}
-                accept='.png, .jpg, .jpeg'
+                //maxSize={1000000}
+                accept='.png, .jpg, .jpeg, .webp'
                 onDropRejected={() => {
                   setImgErrorMessage(
                     t('Incorrect File Type(jpeg,jpg,png) or Size(max 1MB)')
