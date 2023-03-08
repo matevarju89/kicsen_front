@@ -41,6 +41,10 @@ code {
 .ql-editor::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+.quill-desc {
+  max-width: 800px;
+  word-wrap: break-word;
+}
 .quill-desc p {
   margin: 0;
 }

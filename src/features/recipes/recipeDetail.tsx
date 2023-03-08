@@ -11,7 +11,6 @@ import {
 } from './recipeSlice';
 import { useHistory, useParams } from 'react-router-dom';
 import { Skeleton } from 'baseui/skeleton';
-import { userSelector } from '../user/userSlice';
 import RatingsForm from '../ratings/RatingsForm';
 import RatingItem from '../common/RatingItem';
 
@@ -99,11 +98,13 @@ export const RecipeDetail = () => {
           )}
           <img
             width={'100%'}
+            height={'300px'}
             alt='food'
             onLoad={() => {
               setImageLoaded(true);
             }}
             className={css({
+              objectFit: 'cover',
               [theme.mediaQuery.medium]: {
                 width: '500px',
               },
