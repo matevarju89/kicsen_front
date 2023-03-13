@@ -100,22 +100,34 @@ const RecipeCard = ({ recipe, recipeLoading }: IRecipeCardProps) => {
             margin: '0',
             fontSize: '15px',
             lineHeight: '18px',
-            height: '36px',
+            height: '40px',
+            overflow: 'hidden',
 
             [theme.mediaQuery.medium]: {
               fontSize: '2vw',
               lineHeight: '2.2vw',
-              height: 'auto',
+              height: '2.4vw',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
               marginBottom: '10px',
             },
             [theme.mediaQuery.large]: {
               fontSize: '20px',
               lineHeight: '24px',
+              height: '48px',
+              overflow: 'hidden',
+              whiteSpace: 'normal',
+              textOverflow: 'initial',
             },
           })}
         >
           {!recipeLoading && recipe && !showSkeleton ? (
-            <>{recipe.title}</>
+            <>
+              {recipe.title.length > 36
+                ? recipe.title.slice(0, 34) + '...'
+                : recipe.title}
+            </>
           ) : (
             <Skeleton height='27px' width='60px' />
           )}
