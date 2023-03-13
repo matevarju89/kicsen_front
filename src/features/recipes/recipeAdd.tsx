@@ -348,7 +348,7 @@ const RecipeAdd = () => {
               .string()
               .max(10000, t('Description should be max 1000 characters'))
               .required(t('Description is required')),
-            forHowMany: yup.number(),
+            //forHowMany: yup.number(),
             ingredients: yup.string().required(t('Ingredients are required')),
           })}
           onSubmit={async (values, actions) => {

@@ -167,7 +167,7 @@ const SearchBox = (props: any) => {
                 </Button>
               );
             })}
-            {smartTagList.length > 7 && !smartTagsExpanded && (
+            {smartTagList.length > 10 && !smartTagsExpanded && (
               <Button
                 kind={KIND.tertiary}
                 overrides={{
@@ -193,9 +193,9 @@ const SearchBox = (props: any) => {
                 {t('Show all...')}
               </Button>
             )}
-            {smartTagList.length > 7 &&
+            {smartTagList.length > 10 &&
               smartTagsExpanded &&
-              smartTagList.slice(7).map((smartTag) => {
+              smartTagList.slice(10).map((smartTag) => {
                 return (
                   <Button
                     onClick={() => {
@@ -230,7 +230,7 @@ const SearchBox = (props: any) => {
                   </Button>
                 );
               })}
-            {smartTagList.length > 7 && smartTagsExpanded && (
+            {smartTagList.length > 10 && smartTagsExpanded && (
               <Button
                 kind={KIND.tertiary}
                 overrides={{

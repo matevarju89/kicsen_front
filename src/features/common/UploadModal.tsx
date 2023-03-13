@@ -33,6 +33,7 @@ const UploadModal = (props: any) => {
       className={css({
         display: 'flex',
         position: 'fixed',
+        zIndex: '3',
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
